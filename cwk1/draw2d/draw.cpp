@@ -24,6 +24,7 @@ void draw_line_solid( Surface& aSurface, Vec2f aBegin, Vec2f aEnd, ColorU8_sRGB 
 }
 */
 
+/*
 void draw_line_solid( Surface& surface, Vec2f begin, Vec2f end, ColorU8_sRGB color ) {
     // Step 1: Liang-Barsky Line Clipping
     float x0 = begin.x, y0 = begin.y;
@@ -84,6 +85,86 @@ void draw_line_solid( Surface& surface, Vec2f begin, Vec2f end, ColorU8_sRGB col
         }
     }
 }
+*/
+
+void draw_line_solid(Surface& surface, Vec2f begin, Vec2f end, ColorU8_sRGB color) {
+    // Liang-Barsky Line Clipping
+    float x0 = begin.x, y0 = begin.y;
+    float x1 = end.x, y1 = end.y;
+
+    float p[4], q[4];
+    p[0] = -(x1 - x0);
+    p[1] = -p[0];
+    p[2] = -(y1 - y0);
+    p[3] = -p[2];
+    
+    q[0] = x0;
+    q[1] = surface.get_width() - x0;
+    q[2] = y0;
+    q[3] = surface.get_height() - y0;
+
+    float u1 = 0.0, u2 = 1.0;
+    for (int i = 0; i < 4; i++) {
+        if (p[i] == 0) {
+            if (q[i] < 0) return;
+        } else {
+            float t = q[i] / p[i];
+            if (p[i] < 0) u1 = std::max(u1, t);
+            else u2 = std::min(u2, t);
+        }
+    }
+    if (u1 > u2) return;
+
+    x0 = x0 + u1 * (x1 - x0);
+    y0 = y0 + u1 * (y1 - y0);
+    x1 = x0 + u2 * (x1 - x0);
+    y1 = y0 + u2 * (y1 - y0);
+
+    // Ensuring that the clipped coordinates are within the surface dimensions
+    x0 = std::clamp(x0, 0.0f, static_cast<float>(surface.get_width() - 1));
+    y0 = std::clamp(y0, 0.0f, static_cast<float>(surface.get_height() - 1));
+    x1 = std::clamp(x1, 0.0f, static_cast<float>(surface.get_width() - 1));
+    y1 = std::clamp(y1, 0.0f, static_cast<float>(surface.get_height() - 1));
+
+    // Bresenham's Line Drawing
+    int ix0 = static_cast<int>(x0);
+    int iy0 = static_cast<int>(y0);
+    int ix1 = static_cast<int>(x1);
+    int iy1 = static_cast<int>(y1);
+
+    int dx = std::abs(ix1 - ix0);
+    int dy = std::abs(iy1 - iy0);
+    int sx = (ix0 < ix1) ? 1 : -1;
+    int sy = (iy0 < iy1) ? 1 : -1;
+    int err = dx - dy;
+
+    int safetyCounter = 0; // prevent endless loop
+    int maxSteps = std::max(surface.get_width(), surface.get_height()) * 2; // roughly twice the diagonal of the surface
+
+    while (safetyCounter < maxSteps) {
+        if (ix0 >= 0 && ix0 < static_cast<int>(surface.get_width()) &&
+            iy0 >= 0 && iy0 < static_cast<int>(surface.get_height())) {
+            surface.set_pixel_srgb(ix0, iy0, color);
+        }
+
+        if (ix0 == ix1 && iy0 == iy1) break;
+
+        int e2 = 2 * err;
+        if (e2 > -dy) {
+            err -= dy;
+            ix0 += sx;
+        }
+        if (e2 < dx) {
+            err += dx;
+            iy0 += sy;
+        }
+
+        safetyCounter++;
+    }
+}
+
+
+
 
 
 void draw_triangle_wireframe( Surface& aSurface, Vec2f aP0, Vec2f aP1, Vec2f aP2, ColorU8_sRGB aColor )
