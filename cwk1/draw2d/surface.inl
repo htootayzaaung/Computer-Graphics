@@ -52,12 +52,6 @@ void Surface::set_pixel_srgb(Index aX, Index aY, ColorU8_sRGB const& aColor)
 {
     assert(aX < mWidth && aY < mHeight); // IMPORTANT! This line must remain the first line in this function!
 
-    if (aX < 0 || aX >= mWidth || aY < 0 || aY >= mHeight) {
-        // Optionally print or log out-of-bounds coordinates for debugging.
-        //std::cerr << "Attempted to set out-of-bounds pixel: x=" << aX << ", y=" << aY << std::endl;
-        return; // Exit early if pixel is out of bounds.
-    }
-
     Index index = get_linear_index(aX, aY);
     mSurface[index + 0] = aColor.r;  // Set red
     mSurface[index + 1] = aColor.g;  // Set green
