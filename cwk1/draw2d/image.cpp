@@ -49,6 +49,7 @@ std::unique_ptr<ImageRGBA> load_image( char const* aPath )
 	);
 }
 
+/*
 void blit_masked( Surface& aSurface, ImageRGBA const& aImage, Vec2f aPosition )
 {
 	//TODO: your implementation goes here
@@ -58,6 +59,34 @@ void blit_masked( Surface& aSurface, ImageRGBA const& aImage, Vec2f aPosition )
 	(void)aImage;    // function is properly implemented.
 	(void)aPosition;
 }
+*/
+
+void blit_masked( Surface& aSurface, ImageRGBA const& aImage, Vec2f aPosition )
+{
+    for (ImageRGBA::Index y = 0; y < aImage.get_height(); ++y)
+    {
+        for (ImageRGBA::Index x = 0; x < aImage.get_width(); ++x)
+        {
+            ColorU8_sRGB_Alpha pixel = aImage.get_pixel(x, y);
+
+            if (pixel.a >= 128) // Check the alpha value.
+            {
+                // Convert aPosition (float) to integer coordinates.
+                int destX = static_cast<int>(aPosition.x) + x;
+                int destY = static_cast<int>(aPosition.y) + y;
+
+                // Ensure we are within the surface boundaries.
+                if (destX >= 0 && destX < static_cast<int>(aSurface.get_width()) && destY >= 0 && destY < static_cast<int>(aSurface.get_height()))
+                {
+                    ColorU8_sRGB convertedPixel = { pixel.r, pixel.g, pixel.b };
+                    aSurface.set_pixel_srgb(destX, destY, convertedPixel);
+                }
+            }
+        }
+    }
+}
+
+
 
 namespace
 {

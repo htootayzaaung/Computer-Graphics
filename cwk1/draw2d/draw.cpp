@@ -158,7 +158,6 @@ void draw_line_solid(Surface& surface, Vec2f begin, Vec2f end, ColorU8_sRGB colo
             err += dx;
             iy0 += sy;
         }
-
         safetyCounter++;
     }
 }
@@ -268,6 +267,7 @@ void draw_triangle_interp(Surface& aSurface, Vec2f aP0, Vec2f aP1, Vec2f aP2, Co
     }
 }
 
+
 void draw_rectangle_solid( Surface& aSurface, Vec2f aMinCorner, Vec2f aMaxCorner, ColorU8_sRGB aColor )
 {
 	//TODO: your implementation goes here
@@ -293,3 +293,34 @@ void draw_rectangle_outline( Surface& aSurface, Vec2f aMinCorner, Vec2f aMaxCorn
 	(void)aMaxCorner;
 	(void)aColor;
 }
+
+/*
+void draw_rectangle_solid( Surface& aSurface, Vec2f aMinCorner, Vec2f aMaxCorner, ColorU8_sRGB aColor )
+{
+    for (int y = static_cast<int>(aMinCorner.y); y <= static_cast<int>(aMaxCorner.y); ++y)
+    {
+        for (int x = static_cast<int>(aMinCorner.x); x <= static_cast<int>(aMaxCorner.x); ++x)
+        {
+            aSurface.set_pixel_srgb(x, y, aColor);
+        }
+    }
+}
+
+void draw_rectangle_outline( Surface& aSurface, Vec2f aMinCorner, Vec2f aMaxCorner, ColorU8_sRGB aColor )
+{
+    // Top and bottom lines
+    for (int x = static_cast<int>(aMinCorner.x); x <= static_cast<int>(aMaxCorner.x); ++x)
+    {
+        aSurface.set_pixel_srgb(x, static_cast<int>(aMinCorner.y), aColor);
+        aSurface.set_pixel_srgb(x, static_cast<int>(aMaxCorner.y), aColor);
+    }
+
+    // Left and right lines
+    for (int y = static_cast<int>(aMinCorner.y); y <= static_cast<int>(aMaxCorner.y); ++y)
+    {
+        aSurface.set_pixel_srgb(static_cast<int>(aMinCorner.x), y, aColor);
+        aSurface.set_pixel_srgb(static_cast<int>(aMaxCorner.x), y, aColor);
+    }
+}
+*/
+

@@ -3,27 +3,15 @@
  ../draw2d/color.inl ../vmlib/vec2.hpp defaults.hpp particle_field.hpp \
  ../draw2d/image.hpp ../draw2d/forward.hpp ../draw2d/color.hpp \
  ../draw2d/../vmlib/vec2.hpp ../draw2d/image.inl
-
 background.hpp:
-
 ../draw2d/forward.hpp:
-
 ../draw2d/color.hpp:
-
 ../draw2d/color.inl:
-
 ../vmlib/vec2.hpp:
-
 defaults.hpp:
-
 particle_field.hpp:
-
 ../draw2d/image.hpp:
-
 ../draw2d/forward.hpp:
-
 ../draw2d/color.hpp:
-
 ../draw2d/../vmlib/vec2.hpp:
-
 ../draw2d/image.inl:
