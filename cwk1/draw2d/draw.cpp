@@ -158,67 +158,34 @@ void draw_triangle_interp( Surface& aSurface, Vec2f aP0, Vec2f aP1, Vec2f aP2, C
 }
 */
 
-void draw_triangle_interp(Surface& surface, Vec2f v0, Vec2f v1, Vec2f v2, ColorF c0, ColorF c1, ColorF c2)
+void draw_triangle_interp(Surface& aSurface, Vec2f aP0, Vec2f aP1, Vec2f aP2, ColorF aC0, ColorF aC1, ColorF aC2)
 {
-    // Compute triangle bounding box
-    float minX = std::min({v0.x, v1.x, v2.x});
-    float minY = std::min({v0.y, v1.y, v2.y});
-    float maxX = std::max({v0.x, v1.x, v2.x});
-    float maxY = std::max({v0.y, v1.y, v2.y});
+    // Calculate bounding box of the triangle
+    float minX = std::max(0.0f, std::min({aP0.x, aP1.x, aP2.x}));
+    float minY = std::max(0.0f, std::min({aP0.y, aP1.y, aP2.y}));
 
-    // Clip against screen bounds
-    minX = std::max(minX, 0.0f);
-    minY = std::max(minY, 0.0f);
-    maxX = std::min(maxX, (float)surface.width - 1);
-    maxY = std::min(maxY, (float)surface.height - 1);
+    float maxX = std::min(static_cast<float>(aSurface.get_width() - 1), std::max({aP0.x, aP1.x, aP2.x}));
+    float maxY = std::min(static_cast<float>(aSurface.get_height() - 1), std::max({aP0.y, aP1.y, aP2.y}));
 
-    // Rasterize
-    for (float y = minY; y <= maxY; y += 1.0f)
-    {
-        for (float x = minX; x <= maxX; x += 1.0f)
-        {
-            // Using brace initialization for Vec2f
-            Vec2f p = {x, y};
-            
-            // Compute barycentric coordinates
-            float w0 = edgeFunction(v1, v2, p);
-            float w1 = edgeFunction(v2, v0, p);
-            float w2 = edgeFunction(v0, v1, p);
-            
-            if (w0 >= 0 && w1 >= 0 && w2 >= 0)
-            {
-                // Interpolate vertex colors
-                float sum = w0 + w1 + w2;
-                w0 /= sum;
-                w1 /= sum;
-                w2 /= sum;
-                ColorF interpolatedColor = {
-                    w0 * c0.r + w1 * c1.r + w2 * c2.r,
-                    w0 * c0.g + w1 * c1.g + w2 * c2.g,
-                    w0 * c0.b + w1 * c1.b + w2 * c2.b,
-                };
+    // Precompute values for the barycentric coordinates
+    float denom = (aP1.y - aP2.y) * (aP0.x - aP2.x) + (aP2.x - aP1.x) * (aP0.y - aP2.y);
 
-                // Convert to 8-bit color
-                Color8Bit intColor8Bit = {
-                    static_cast<uint8_t>(255 * interpolatedColor.r),
-                    static_cast<uint8_t>(255 * interpolatedColor.g),
-                    static_cast<uint8_t>(255 * interpolatedColor.b)
-                };
+    for (float y = minY; y <= maxY; y += 1.0f) {
+        for (float x = minX; x <= maxX; x += 1.0f) {
+            float w0 = ((aP1.y - aP2.y) * (x - aP2.x) + (aP2.x - aP1.x) * (y - aP2.y)) / denom;
+            float w1 = ((aP2.y - aP0.y) * (x - aP2.x) + (aP0.x - aP2.x) * (y - aP2.y)) / denom;
+            float w2 = 1.0f - w0 - w1;
 
-                // Drawing pixel
-                // Please ensure you have the correct function to draw pixel in the Surface class.
-                // Here, I'm using a hypothetical function as I don't have the Surface class details.
-                surface.drawPixel(p, intColor8Bit);
+            if (w0 >= 0 && w1 >= 0 && w2 >= 0) {
+                // Interpolate colors using barycentric coordinates
+
+                //In the color.hpp, I have created the multiplication and the addition operator!
+                ColorF interpolatedColor = aC0 * w0 + aC1 * w1 + aC2 * w2;
+                aSurface.set_pixel_srgb(static_cast<Surface::Index>(x), static_cast<Surface::Index>(y), linear_to_srgb(interpolatedColor));
             }
         }
     }
 }
-
-
-
-
-
-
 
 void draw_rectangle_solid( Surface& aSurface, Vec2f aMinCorner, Vec2f aMaxCorner, ColorU8_sRGB aColor )
 {

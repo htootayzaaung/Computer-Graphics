@@ -2,12 +2,21 @@
  particle_field.cpp particle_field.hpp ../draw2d/forward.hpp \
  ../draw2d/color.hpp ../draw2d/color.inl ../vmlib/vec2.hpp defaults.hpp \
  ../draw2d/surface.hpp ../draw2d/color.hpp ../draw2d/surface.inl
+
 particle_field.hpp:
+
 ../draw2d/forward.hpp:
+
 ../draw2d/color.hpp:
+
 ../draw2d/color.inl:
+
 ../vmlib/vec2.hpp:
+
 defaults.hpp:
+
 ../draw2d/surface.hpp:
+
 ../draw2d/color.hpp:
+
 ../draw2d/surface.inl:

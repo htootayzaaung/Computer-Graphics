@@ -34,6 +34,17 @@ struct ColorF
 	float r;
 	float g;
 	float b;
+
+	/*##############################		I HAVE CREATED THE FOLLOWING OVERLOADED OPERATORS		######################*/
+	// Overloaded multiplication operator
+    ColorF operator*(float scalar) const noexcept {
+        return ColorF{ r * scalar, g * scalar, b * scalar };
+    }
+
+    // Overloaded addition operator
+    ColorF operator+(const ColorF& other) const noexcept {
+        return ColorF{ r + other.r, g + other.g, b + other.b };
+    }
 };
 
 /** sRGB color
