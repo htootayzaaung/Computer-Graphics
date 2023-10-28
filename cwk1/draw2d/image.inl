@@ -35,6 +35,7 @@ auto ImageRGBA::get_width() const noexcept -> Index
 	return mWidth;
 }
 inline
+
 auto ImageRGBA::get_height() const noexcept -> Index
 {
 	return mHeight;
