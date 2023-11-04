@@ -23,54 +23,7 @@ struct Mat22f
 	float _10, _11;
 };
 
-// Common operators for Mat22f.
-// Note that you will need to implement these yourself.
-/*
-constexpr
-Mat22f operator*( Mat22f const& aLeft, Mat22f const& aRight ) noexcept
-{
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aLeft; // Avoid warnings about unused arguments until the function
-	(void)aRight;  // is properly implemented.
-	return Mat22f{ 1.f, 0.f, 0.f, 1.f };
-}
-
-constexpr
-Vec2f operator*( Mat22f const& aLeft, Vec2f const& aRight ) noexcept
-{
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aLeft; // Avoid warnings about unused arguments until the function
-	return aRight;
-}
-
-// Functions:
-
-inline
-Mat22f make_rotation_2d( float aAngle ) noexcept
-{
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-	//TODO: your implementation goes here
-
-	//TODO: remove the following when you start your implementation
-	(void)aAngle; // Avoid warnings about unused arguments until the function
-	              // is properly implemented.
-	return Mat22f{ 1.f, 0.f, 0.f, 1.f };
-}
-*/
-
-// Assuming you have a class/struct named Mat22f with members m00, m01, m10, m11
-// And a class/struct named Vec2f with members x and y
-
-// Matrix-matrix multiplication
+// 2D-matrix multiplication
 constexpr Mat22f operator*(Mat22f const& aLeft, Mat22f const& aRight) noexcept
 {
     return {
@@ -79,6 +32,18 @@ constexpr Mat22f operator*(Mat22f const& aLeft, Mat22f const& aRight) noexcept
         aLeft._10 * aRight._00 + aLeft._11 * aRight._10,
         aLeft._10 * aRight._01 + aLeft._11 * aRight._11
     };
+
+	/*	
+		[ aLeft[0][0]  aLeft[0][1] ] [ aRight[0][0]  aRight[0][1] ] 
+		[ aLeft[1][0]  aLeft[1][1] ] [ aRight[1][0]  aRight[1][1] ]
+						2			x			2
+									
+									=
+		
+		[ aLeft[0][0] * aRight[0][0] + aLeft[0][1] * aRight[1][0]   aLeft[0][0] * aRight[0][1] + aLeft[0][1] * aRight[1][1] ]
+		[ aLeft[1][0] * aRight[0][0] + aLeft[1][1] * aRight[1][0]   aLeft[1][0] * aRight[0][1] + aLeft[1][1] * aRight[1][1] ]
+									2							x							2
+	*/
 }
 
 // Matrix-vector multiplication
@@ -88,6 +53,17 @@ constexpr Vec2f operator*(Mat22f const& aLeft, Vec2f const& aRight) noexcept
         aLeft._00 * aRight.x + aLeft._01 * aRight.y,
         aLeft._10 * aRight.x + aLeft._11 * aRight.y
     };
+
+	/*
+		[ aLeft[0][0]  aLeft[0][1] ] [ aRight.x ] 
+		[ aLeft[1][0]  aLeft[1][1] ] [ aRight.y ]
+				2	  X		2			2	x	1
+								=
+
+		[ aLeft[0][0] * aRight.x + aLeft[0][1] * aRight.y ]
+		[ aLeft[1][0] * aRight.x + aLeft[1][1] * aRight.y ]
+	*/
+
 }
 
 // Creation of a rotation matrix
@@ -100,6 +76,14 @@ inline Mat22f make_rotation_2d(float aAngle) noexcept
         cosA, -sinA,
         sinA,  cosA
     };
+
+	/*
+		The standard 2D rotation in an anti-clockwise direction, rotation about origin about an angle θ is:
+
+		[  cos(θ)  -sin(θ) ]
+		[  sin(θ)   cos(θ) ]
+	*/	
+	
 }
 
 #endif // MAT22_HPP_1F974C02_D0D1_4FBD_B5EE_A69C88112088

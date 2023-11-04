@@ -86,6 +86,16 @@ void blit_masked( Surface& aSurface, ImageRGBA const& aImage, Vec2f aPosition )
     }
 }
 
+/*
+	Follow-up questions:
+		- What is image blitting?
+		- What is alpha-masking?
+		- Does my implementation includes both image blitting and alpha-masking?
+		- Describe the implementation of my blit.
+		- Discuss the efficiency of my implementation.
+		- Are there any implementations you could think of?
+*/
+
 
 
 namespace
