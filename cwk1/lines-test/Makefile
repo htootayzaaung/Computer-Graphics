@@ -12,7 +12,7 @@ endif
 
 SHELLTYPE := posix
 ifeq (.exe,$(findstring .exe,$(ComSpec)))
-	SHELLTYPE := msdos
+  SHELLTYPE := msdos
 endif
 
 # Configurations
@@ -71,12 +71,22 @@ GENERATED += $(OBJDIR)/cull.o
 GENERATED += $(OBJDIR)/helpers.o
 GENERATED += $(OBJDIR)/specials.o
 GENERATED += $(OBJDIR)/thin_line.o
+GENERATED += $(OBJDIR)/continuous_line_drawing_test.o
+GENERATED += $(OBJDIR)/horizontal_vertical_line_test.o
+GENERATED += $(OBJDIR)/diagonal_line_uniformity_test.o
+GENERATED += $(OBJDIR)/line_drawing_precision_test.o
+GENERATED += $(OBJDIR)/steep_gradient_line_test.o
 OBJECTS += $(OBJDIR)/clip.o
 OBJECTS += $(OBJDIR)/connected.o
 OBJECTS += $(OBJDIR)/cull.o
 OBJECTS += $(OBJDIR)/helpers.o
 OBJECTS += $(OBJDIR)/specials.o
 OBJECTS += $(OBJDIR)/thin_line.o
+OBJECTS += $(OBJDIR)/continuous_line_drawing_test.o
+OBJECTS += $(OBJDIR)/horizontal_vertical_line_test.o
+OBJECTS += $(OBJDIR)/diagonal_line_uniformity_test.o
+OBJECTS += $(OBJDIR)/line_drawing_precision_test.o
+OBJECTS += $(OBJDIR)/steep_gradient_line_test.o
 
 # Rules
 # #############################################
@@ -140,8 +150,8 @@ endif
 # File Rules
 # #############################################
 
-$(OBJDIR)/clip.o: clip.cpp
-	@echo $(notdir $<)
+$(OBJDIR)/clip.o: clip.cpp | prebuild
+	@echo Compiling clip.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/connected.o: connected.cpp
 	@echo $(notdir $<)
@@ -157,6 +167,25 @@ $(OBJDIR)/specials.o: specials.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/thin_line.o: thin_line.cpp
 	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/continuous_line_drawing_test.o: continuous_line_drawing_test.cpp | prebuild
+	@echo Compiling continuous_line_drawing_test.cpp
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+
+$(OBJDIR)/horizontal_vertical_line_test.o: horizontal_vertical_line_test.cpp | prebuild
+	@echo Compiling horizontal_vertical_line_test.cpp
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+
+$(OBJDIR)/diagonal_line_uniformity_test.o: diagonal_line_uniformity_test.cpp | prebuild
+	@echo Compiling diagonal_line_uniformity_test.cpp
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+
+$(OBJDIR)/line_drawing_precision_test.o: line_drawing_precision_test.cpp | prebuild
+	@echo Compiling line_drawing_precision_test.cpp
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+
+$(OBJDIR)/steep_gradient_line_test.o: steep_gradient_line_test.cpp | prebuild
+	@echo Compiling steep_gradient_line_test.cpp
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
 -include $(OBJECTS:%.o=%.d)

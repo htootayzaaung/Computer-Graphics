@@ -112,3 +112,17 @@ std::array<std::size_t,9> count_pixel_neighbours( Surface const& aSurface )
 
 	return res;
 }
+
+// Helper function to compare a pixel's color to an expected color
+bool pixelMatchesColor(const Surface& surface, const Vec2f& point, const ColorU8_sRGB& expectedColor) {
+    // Get the pointer to the surface's pixel data
+    const auto* ptr = surface.get_surface_ptr();
+
+    // Calculate the linear index of the pixel at the given point
+    auto index = surface.get_linear_index(static_cast<Surface::Index>(point.x), static_cast<Surface::Index>(point.y));
+
+    // Compare the pixel's color to the expected color
+    return (ptr[index] == expectedColor.r &&
+            ptr[index + 1] == expectedColor.g &&
+            ptr[index + 2] == expectedColor.b);
+}

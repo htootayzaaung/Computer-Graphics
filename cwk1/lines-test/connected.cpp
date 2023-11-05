@@ -45,7 +45,7 @@ TEST_CASE( "No gaps", "[connect]" )
 			{ 64.f, 100.f },
 			{ 255, 255, 255 }
 		);
-
+	////////////
 		auto const counts = count_pixel_neighbours( surface );
 		REQUIRE( 2 == counts[1] );
 		REQUIRE( counts[2] > 0 );
@@ -54,6 +54,7 @@ TEST_CASE( "No gaps", "[connect]" )
 
 		for( std::size_t i = 3; i < counts.size(); ++i )
 			REQUIRE( 0 == counts[i]  );
+	///////// FOR CONTINUITY
 	}
 
 	SECTION( "diagonal" )

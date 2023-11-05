@@ -221,6 +221,94 @@ int main( int aArgc, char* aArgv[] ) try
 
 			//TODO: your own tests here?
 			//TODO: your own tests here?
+
+			case 5: {	// Horizontal and Vertical Line Test
+            	// Draw an 'L' shape with a horizontal and a vertical line
+            	ColorU8_sRGB white{255, 255, 0}; // White color for the lines
+
+            	// Horizontal Line
+            	Vec2f startH{10.f, 10.f};
+            	Vec2f endH{190.f, 10.f};
+            	draw_line_solid(surface, startH, endH, white);
+
+            	// Vertical Line
+            	Vec2f startV{10.f, 10.f};
+            	Vec2f endV{10.f, 190.f};
+            	draw_line_solid(surface, startV, endV, white);
+
+            	// Now both lines will be drawn to form an 'L' shape on the surface
+        	} break;
+
+			case 6: {	// Continuous Line Drawing Test
+    			// Clear the surface
+    			surface.clear();
+
+    			// Define the color for the lines
+    			ColorU8_sRGB white{255, 255, 0};
+
+    			// Define points for two continuous lines
+    			Vec2f p0{10.f, 10.f};
+    			Vec2f p1{100.f, 10.f}; // Connection point
+    			Vec2f p2{100.f, 100.f};
+
+    			// Draw the first line from p0 to p1
+    			draw_line_solid(surface, p0, p1, white);
+
+    			// Draw the second line from p1 to p2
+    			draw_line_solid(surface, p1, p2, white);
+
+    			// The two lines should now be drawn continuously without any gap
+
+    			// Draw the surface to the context
+    			context.draw(surface);
+
+    			// Display results
+    			glfwSwapBuffers(window);
+			} break;
+
+			case 7: {	//Diagonal Line Uniformity Test
+    			// Clear the surface
+    			surface.clear();
+
+    			// Define the color for the line
+    			ColorU8_sRGB white{255, 255, 0};
+
+    			// Define points for a diagonal line
+    			Vec2f start{0.f, 0.f};
+    			Vec2f end{static_cast<float>(surface.get_width() - 1), static_cast<float>(surface.get_height() - 1)};
+
+    			// Draw the diagonal line from start to end
+    			draw_line_solid(surface, start, end, white);
+
+    			// The line should now be drawn uniformly across the diagonal
+
+    			// Draw the surface to the context
+    			context.draw(surface);
+
+    			// Display results
+    			glfwSwapBuffers(window);
+			} break;
+
+			case 8: { // Line Drawing Precision Test
+    
+				surface.clear();
+    			ColorU8_sRGB white{255, 255, 0};
+
+    			Vec2f start1{50.f, 50.f};
+    			Vec2f end1{150.f, 50.f};
+    			Vec2f start2{50.f, 51.f};
+    			Vec2f end2{150.f, 51.f};
+
+    			// Draw two horizontal lines, one pixel apart
+    			draw_line_solid(surface, start1, end1, white);
+    			draw_line_solid(surface, start2, end2, white);
+
+    			// Render the surface to the context
+    			context.draw(surface);
+    
+    			// Swap the buffers to display the lines
+    			glfwSwapBuffers(window);
+			} break;
 		}
 		
 		context.draw( surface );

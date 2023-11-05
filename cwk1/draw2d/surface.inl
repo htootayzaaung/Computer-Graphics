@@ -120,7 +120,3 @@ void Surface::set_pixel_srgb(Index aX, Index aY, ColorU8_sRGB const& aColor)
 
     // Note: No need to set the fourth byte as it's for padding in the RGBx format.
 }
-
-
-
-
