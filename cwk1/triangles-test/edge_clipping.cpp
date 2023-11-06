@@ -1,42 +1,95 @@
 #include <catch2/catch_amalgamated.hpp>
-#include "helpers.hpp" // Include this if helpers.hpp contains relevant utility functions or declarations
+
+#include "helpers.hpp"
 #include "../draw2d/surface.hpp"
 #include "../draw2d/draw.hpp"
-#include "../draw2d/color.hpp" // Include this if it contains relevant color definitions
-/*
-// Helper function to verify that edges of the triangle are correctly clipped
-bool checkEdgeClipping(const Surface& surface, Vec2f p0, Vec2f p1, Vec2f p2) {
-    // Check the four corners of the surface to ensure they are not colored
-    // Top-left corner
-    if (surface.get_pixel_color(0, 0) != ColorU8_sRGB{0, 0, 0}) return false;
-    // Top-right corner
-    if (surface.get_pixel_color(surface.get_width() - 1, 0) != ColorU8_sRGB{0, 0, 0}) return false;
-    // Bottom-left corner
-    if (surface.get_pixel_color(0, surface.get_height() - 1) != ColorU8_sRGB{0, 0, 0}) return false;
-    // Bottom-right corner
-    if (surface.get_pixel_color(surface.get_width() - 1, surface.get_height() - 1) != ColorU8_sRGB{0, 0, 0}) return false;
 
-    // Optionally, more thorough checks can be added to verify the absence of colored pixels outside the triangle's bounding box
-
-    return true;
-}
-
-// Test case to verify that triangle edges are clipped correctly
-TEST_CASE("Edge Clipping Test", "[triangles][solid][interp]") {
-    Surface surface(200, 200);
+TEST_CASE("Edge Clipping - Triangle Clipping", "[triangle][clip]") {
+    Surface surface(320, 240);
     surface.clear();
-    ColorU8_sRGB fillColor{255, 0, 0}; // Red color for the solid triangle
-    ColorF c0{1.f, 0.f, 0.f}, c1{0.f, 1.f, 0.f}, c2{0.f, 0.f, 1.f}; // RGB colors
 
-    Vec2f p0{-50.f, -50.f}, p1{250.f, -50.f}, p2{100.f, 250.f};
+    ColorU8_sRGB triangleColor = {255, 0, 0}; // Red for visibility.
+    ColorU8_sRGB clearColor = {0, 0, 0}; // Assuming clear color is black for the surface.
 
-    // Draw solid triangle
-    draw_triangle_solid(surface, p0, p1, p2, fillColor);
+    // Triangle Partially Outside - Left Edge
+    SECTION("Triangle Partially Outside - Left Edge") {
+        Vec2f v1 = {-10.f, 10.f};
+        Vec2f v2 = {160.f, 10.f};
+        Vec2f v3 = {75.f, 220.f};
 
-    // Draw interpolated triangle
-    draw_triangle_interp(surface, p0, p1, p2, c0, c1, c2);
+        draw_triangle_solid(surface, v1, v2, v3, triangleColor);
 
-    // Verify edge clipping
-    REQUIRE(checkEdgeClipping(surface, p0, p1, p2));
-}
-*/
+        // Check only the first column for the expected clear color.
+        for (Surface::Index y = 0; y < surface.get_height(); ++y) {
+            auto index = y * surface.get_width() * 4; // Index for the first pixel of each row
+            ColorU8_sRGB pixelColor = {
+                surface.get_surface_ptr()[index],    // Red
+                surface.get_surface_ptr()[index+1],  // Green
+                surface.get_surface_ptr()[index+2]   // Blue
+            };
+            REQUIRE(pixelColor == clearColor);
+        }
+    }
+
+    // Triangle Partially Outside - Right Edge
+    SECTION("Triangle Partially Outside - Right Edge") {
+        Vec2f v1 = {320.f, 10.f};
+        Vec2f v2 = {640.f, 100.f}; // well beyond the right edge
+        Vec2f v3 = {320.f, 230.f};
+
+        draw_triangle_solid(surface, v1, v2, v3, triangleColor);
+
+        // Check only the last column for the expected clear color.
+        for (Surface::Index y = 0; y < surface.get_height(); ++y) {
+            auto index = y * surface.get_width() * 4 + (surface.get_width() - 1) * 4; // Index for the last pixel of each row
+            ColorU8_sRGB pixelColor = {
+                surface.get_surface_ptr()[index],    // Red
+                surface.get_surface_ptr()[index+1],  // Green
+                surface.get_surface_ptr()[index+2]   // Blue
+            };
+            REQUIRE(pixelColor == clearColor);
+        }
+    }
+
+    // Triangle Partially Outside - Top Edge
+    SECTION("Triangle Partially Outside - Top Edge") {
+        Vec2f v1 = {10.f, -10.f};
+        Vec2f v2 = {300.f, -10.f};
+        Vec2f v3 = {160.f, 210.f};
+
+        draw_triangle_solid(surface, v1, v2, v3, triangleColor);
+
+        // Check only the first row for the expected clear color.
+        for (Surface::Index x = 0; x < surface.get_width(); ++x) {
+            auto index = x * 4; // Index for the first row
+            ColorU8_sRGB pixelColor = {
+                surface.get_surface_ptr()[index],    // Red
+                surface.get_surface_ptr()[index+1],  // Green
+                surface.get_surface_ptr()[index+2]   // Blue
+            };
+            REQUIRE(pixelColor == clearColor);
+        }
+    }
+
+    // Triangle Partially Outside - Bottom Edge
+    SECTION("Triangle Partially Outside - Bottom Edge") {
+        Vec2f v1 = {10.f, 240.f};
+        Vec2f v2 = {300.f, 240.f}; // just beyond the bottom edge
+        Vec2f v3 = {160.f, 10.f};
+
+        draw_triangle_solid(surface, v1, v2, v3, triangleColor);
+
+        // Check only the last row for the expected clear color.
+        for (Surface::Index x = 0; x < surface.get_width(); ++x) {
+            auto index = (surface.get_height() - 1) * surface.get_width() * 4 + x * 4; // Index for the last row
+            ColorU8_sRGB pixelColor = {
+                surface.get_surface_ptr()[index],    // Red
+                surface.get_surface_ptr()[index+1],  // Green
+                surface.get_surface_ptr()[index+2]   // Blue
+            };
+            REQUIRE(pixelColor == clearColor);
+        }
+    }
+
+    // Add additional tests for the triangle completely outside the boundaries
+    // if required

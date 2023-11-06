@@ -3,17 +3,6 @@
 #include "../draw2d/surface.hpp"
 #include "../draw2d/draw.hpp"
 
-// Helper function to determine if a point is inside a triangle using barycentric coordinates.
-bool is_point_inside_triangle(Vec2f p, Vec2f a, Vec2f b, Vec2f c) {
-    float alpha = ((b.y - c.y)*(p.x - c.x) + (c.x - b.x)*(p.y - c.y)) /
-                  ((b.y - c.y)*(a.x - c.x) + (c.x - b.x)*(a.y - c.y));
-    float beta = ((c.y - a.y)*(p.x - c.x) + (a.x - c.x)*(p.y - c.y)) /
-                 ((b.y - c.y)*(a.x - c.x) + (c.x - b.x)*(a.y - c.y));
-    float gamma = 1.0f - alpha - beta;
-
-    return alpha >= 0 && beta >= 0 && gamma >= 0;
-}
-
 TEST_CASE("Uniform Color Coverage", "[triangle][solid]") {
     Surface surface(320, 240);
     surface.clear();

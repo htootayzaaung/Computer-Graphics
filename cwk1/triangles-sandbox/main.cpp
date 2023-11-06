@@ -239,15 +239,6 @@ int main( int aArgc, char* aArgv[] ) try
             		{255, 0, 0}); // Solid red color
     		} break;
 
-			case 5: {
-        		// Uniform Color Coverage Test
-        		draw_triangle_solid(surface,
-            		{50.f, 50.f},  // Top-left vertex
-            		{fbwidth - 50.f, 50.f},  // Top-right vertex
-            		{fbwidth / 2.f, fbheight - 50.f},  // Bottom-center vertex
-            		{255, 0, 0});  // Red color
-    		} break;
-
 			/*
     		case 6: {
         		// Edge Clipping Test

@@ -1,46 +1,48 @@
-
 #include <catch2/catch_amalgamated.hpp>
-#include "helpers.hpp" // Include this if helpers.hpp contains relevant utility functions or declarations
+
+#include "helpers.hpp"
 #include "../draw2d/surface.hpp"
 #include "../draw2d/draw.hpp"
-#include "../draw2d/color.hpp" // Include this if it contains relevant color definitions
-/*
-// Helper function to check color interpolation at the centroid of the triangle
-bool checkInterpolation(const Surface& surface, Vec2f p0, Vec2f p1, Vec2f p2, ColorF c0, ColorF c1, ColorF c2) {
-    // Calculate the centroid of the triangle
-    Vec2f centroid = (p0 + p1 + p2) / 3.0f;
 
-    // Calculate the expected interpolated color at the centroid
-    ColorF expectedColor = (c0 + c1 + c2) / 3.0f;
-
-    // Convert the expected color from floating point to sRGB
-    ColorU8_sRGB expectedColorSRGB = linear_to_srgb(expectedColor);
-
-    // Get the actual color at the centroid from the surface
-    ColorU8_sRGB actualColor = surface.get_pixel_color(static_cast<int>(centroid.x), static_cast<int>(centroid.y));
-
-    // Check if the actual color matches the expected color within a small threshold to account for rounding errors
-    const float threshold = 0.01f; // Define a suitable threshold value
-    bool redMatch = std::abs(actualColor.r - expectedColorSRGB.r) <= threshold;
-    bool greenMatch = std::abs(actualColor.g - expectedColorSRGB.g) <= threshold;
-    bool blueMatch = std::abs(actualColor.b - expectedColorSRGB.b) <= threshold;
-
-    // If the colors match within the threshold, the interpolation is correct
-    return redMatch && greenMatch && blueMatch;
-}
-
-// Test case to verify color interpolation accuracy
-TEST_CASE("Color Interpolation Accuracy Test", "[triangles][interp]") {
-    Surface surface(200, 200);
+TEST_CASE("Interpolation Across Triangle", "[triangle][interp]") {
+    // Initialize a graphics surface.
+    Surface surface(320, 240);
     surface.clear();
 
-    Vec2f p0{50.f, 50.f}, p1{150.f, 50.f}, p2{100.f, 150.f};
-    ColorF c0{1.f, 0.f, 0.f}, c1{0.f, 1.f, 0.f}, c2{0.f, 0.f, 1.f}; // RGB colors
+    // Define the triangle vertices and their corresponding colors.
+    Vec2f v1 = {50.f, 50.f};
+    Vec2f v2 = {270.f, 50.f};
+    Vec2f v3 = {160.f, 190.f};
+    ColorF c1 = {1.0f, 0.0f, 0.0f}; // Red
+    ColorF c2 = {0.0f, 1.0f, 0.0f}; // Green
+    ColorF c3 = {0.0f, 0.0f, 1.0f}; // Blue
 
-    // Draw the triangle with interpolated colors
-    draw_triangle_interp(surface, p0, p1, p2, c0, c1, c2);
+    // Draw the triangle with interpolated colors.
+    draw_triangle_interp(surface, v1, v2, v3, c1, c2, c3);
 
-    // Verify color interpolation along centroid lines
-    REQUIRE(checkInterpolation(surface, p0, p1, p2, c0, c1, c2));
+    // Check the colors at the vertices and at several points within the triangle.
+    // We have to directly access the surface buffer for this since we're not adding new methods.
+    SECTION("Color Interpolation") {
+        // We'll check the color at the center of the triangle to see if the interpolation is correct.
+        Vec2f center = (v1 + v2 + v3) / 3.0f;
+        BarycentricCoordinates bary = compute_barycentric_coordinates(center, v1, v2, v3);
+        ColorF expectedColor = c1 * bary.w1 + c2 * bary.w2 + c3 * bary.w3;
+        ColorU8_sRGB expectedColorSrgb = linear_to_srgb(expectedColor);
+
+        // Since we don't have a get_pixel_color method, we'll access the buffer directly.
+        auto buffer = surface.get_surface_ptr();
+        auto stride = surface.get_width() * 4;
+        auto index = static_cast<std::size_t>(center.y) * stride + static_cast<std::size_t>(center.x) * 4;
+
+        ColorU8_sRGB centerColor = {
+            buffer[index],    // Red
+            buffer[index+1],  // Green
+            buffer[index+2]   // Blue
+        };
+
+        // Check if the color at the center is close to what we expect.
+        REQUIRE(centerColor.r == Catch::Approx(expectedColorSrgb.r).margin(1));
+        REQUIRE(centerColor.g == Catch::Approx(expectedColorSrgb.g).margin(1));
+        REQUIRE(centerColor.b == Catch::Approx(expectedColorSrgb.b).margin(1));
+    }
 }
-*/
