@@ -229,6 +229,36 @@ int main( int aArgc, char* aArgv[] ) try
 				);
 			} break;
 
+			case 4: {
+        		// Uniform Color Coverage Test
+        		// Draw a large triangle and fill it with a solid color.
+        		draw_triangle_solid(surface,
+            		{50.f, 50.f},
+            		{fbwidth - 50.f, 50.f},
+            		{fbwidth / 2.f, fbheight - 50.f},
+            		{255, 0, 0}); // Solid red color
+    		} break;
+
+			case 5: {
+        		// Uniform Color Coverage Test
+        		draw_triangle_solid(surface,
+            		{50.f, 50.f},  // Top-left vertex
+            		{fbwidth - 50.f, 50.f},  // Top-right vertex
+            		{fbwidth / 2.f, fbheight - 50.f},  // Bottom-center vertex
+            		{255, 0, 0});  // Red color
+    		} break;
+
+			/*
+    		case 6: {
+        		// Edge Clipping Test
+        		// Draw a triangle that extends beyond the surface boundaries.
+        		draw_triangle_solid(surface,
+            		{-50.f, -50.f},
+            		{fbwidth + 50.f, -50.f},
+            		{fbwidth / 2.f, fbheight + 50.f},
+            		{255, 255, 0}); // Yellow color
+    		} break;
+			*/
 			//TODO: your own tests here?
 			//TODO: your own tests here?
 		}

@@ -66,10 +66,13 @@ endif
 
 OBJECTS := \
 	$(OBJDIR)/degenerate.o \
+	$(OBJDIR)/edge_clipping.o \
 	$(OBJDIR)/helpers.o \
+	$(OBJDIR)/interpolation_across_triangle.o \
 	$(OBJDIR)/solid_interp.o \
 	$(OBJDIR)/specials.o \
 	$(OBJDIR)/srgb.o \
+	$(OBJDIR)/uniform_color_coverage.o \
 
 RESOURCES := \
 
@@ -131,7 +134,13 @@ endif
 $(OBJDIR)/degenerate.o: degenerate.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/edge_clipping.o: edge_clipping.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/helpers.o: helpers.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/interpolation_across_triangle.o: interpolation_across_triangle.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/solid_interp.o: solid_interp.cpp
@@ -141,6 +150,9 @@ $(OBJDIR)/specials.o: specials.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/srgb.o: srgb.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/uniform_color_coverage.o: uniform_color_coverage.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 
