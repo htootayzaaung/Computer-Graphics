@@ -309,6 +309,25 @@ int main( int aArgc, char* aArgv[] ) try
     			// Swap the buffers to display the lines
     			glfwSwapBuffers(window);
 			} break;
+
+			case 9: { // Steep Gradient Line Test - make sure the case number is unique
+    
+   				surface.clear();
+    			ColorU8_sRGB white{255, 255, 255};
+
+    			Vec2f start{100.f, 10.f};
+    			Vec2f end{101.f, 190.f};
+
+    			// Draw a steep gradient line
+    			draw_line_solid(surface, start, end, white);
+
+    			// Render the surface to the context
+    			context.draw(surface);
+
+    			// Swap the buffers to display the line
+    			glfwSwapBuffers(window);
+    		} break;
+
 		}
 		
 		context.draw( surface );
