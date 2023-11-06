@@ -5,8 +5,8 @@
 #include "../draw2d/color.hpp"
 
 /*
-    The purpose of this test is to ensure the correctness and integrity of the line drawing functionality provided by the draw_line_solid function in your 
-    graphics application. Here's a breakdown of the reasoning behind this test and its importance:
+    The purpose of this test is to ensure the correctness and integrity of the line drawing functionality provided by the draw_line_solid function in 
+    draw.cpp Here's a breakdown of the reasoning behind this test and its importance:
 
     1.) Horizontal Line Test:
         - This test checks whether a horizontal line drawn from point start to point end using draw_line_solid results in the expected number of pixels 
@@ -59,6 +59,12 @@ int countColoredPixels(const Surface& surface, unsigned int x, unsigned int y, b
     }
     return count;
 }
+
+/*
+    Follow-up question:
+        - For each index along the 1D linear-array you compare the RGB values of each pixel with the expectedColor's RGB values
+        in horizontally if horizontal and vertically if vertical. 
+*/
 
 // Additional helper function to check for gaps or additional pixels
 bool checkLineIntegrity(const Surface& surface, unsigned int x, unsigned int y, bool isHorizontal, const ColorU8_sRGB& expectedColor, int expectedPixelCount) {
