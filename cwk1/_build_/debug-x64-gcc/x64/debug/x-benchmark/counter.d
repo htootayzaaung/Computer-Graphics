@@ -2,6 +2,9 @@
  benchmark/src/counter.cc benchmark/src/counter.h \
  benchmark/include/benchmark/benchmark.h \
  benchmark/include/benchmark/export.h
+
 benchmark/src/counter.h:
+
 benchmark/include/benchmark/benchmark.h:
+
 benchmark/include/benchmark/export.h:

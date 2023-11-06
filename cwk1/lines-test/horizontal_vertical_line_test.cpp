@@ -9,17 +9,15 @@
     draw.cpp Here's a breakdown of the reasoning behind this test and its importance:
 
     1.) Horizontal Line Test:
-        - This test checks whether a horizontal line drawn from point start to point end using draw_line_solid results in the expected number of pixels 
-        being set to the desired color (white in this case).
-        - The line is expected to be continuous without any gaps or unexpected colored pixels.
-        - The checkLineIntegrity function verifies that the exact number of pixels along the line's path are colored and that this number matches the 
-        expected pixel count (the difference in x-coordinates plus one).
+        This section ensures that the algorithm can draw a straight horizontal line correctly. The test draws a line using the draw_line_solid function 
+        and then verifies the integrity of this line by counting the colored pixels along the x-axis. It expects the number of colored pixels to equal 
+        the length of the line (which is the difference between the x-coordinates of the end and start points, plus one to account for the inclusive 
+        nature of pixel coordinates).
 
     2.) Verical Line Test:
-        - Similar to the horizontal line test, but for a vertical line.
-        - It checks that a vertical line from start to end results in the correct number of pixels being set to white.
-        - This test is crucial because vertical and horizontal lines are often edge cases for line drawing algorithms due to their alignment with the pixel 
-        grid.
+        This test performs a similar check for a straight vertical line. It validates that the algorithm can correctly draw a line along the y-axis 
+        without any breaks or irregularities. The integrity check here counts the colored pixels along the y-axis, expecting a count equal to the vertical 
+        length of the line.
 
     Reasoning behind the Test:
 
@@ -35,7 +33,24 @@
         For lines, visual continuity is essential. Any gaps or extra pixels would be easily noticeable and undesirable in a graphical application.
 */
 
-// Helper function to count colored pixels in a row or column
+/*
+    Helper function to count colored pixels in a row or column
+
+    - Counts the number of pixels of a specified color along a horizontal or vertical line.
+    - It iterates over each pixel in the specified row (if isHorizontal is true) or column (if isHorizontal is false), checking if it matches the 
+    expected color.
+
+    Parameters:
+        - `surface`: The Surface object on which the line is drawn.
+        - `x`: The x-coordinate of the starting point of the line (used for vertical lines).
+        - `y`: The y-coordinate of the starting point of the line (used for horizontal lines).
+        - `isHorizontal`: A flag indicating whether the line is horizontal (true) or vertical (false).
+        - `expectedColor`: The color that the line is expected to be.
+
+    Returns:
+        - The count of pixels matching the expected color along the specified line.
+*/
+
 int countColoredPixels(const Surface& surface, unsigned int x, unsigned int y, bool isHorizontal, const ColorU8_sRGB& expectedColor) {
     int count = 0;
     const auto* ptr = surface.get_surface_ptr();
@@ -60,13 +75,18 @@ int countColoredPixels(const Surface& surface, unsigned int x, unsigned int y, b
     return count;
 }
 
-/*
-    Follow-up question:
-        - For each index along the 1D linear-array you compare the RGB values of each pixel with the expectedColor's RGB values
-        in horizontally if horizontal and vertically if vertical. 
-*/
 
-// Additional helper function to check for gaps or additional pixels
+/*
+    Additional helper function to check for gaps or additional pixels
+
+    - Validates that the number of colored pixels along a specified line matches the expected count.
+    - This serves as an integrity check to ensure there are no missing or extra pixels in the line, which could indicate gaps or errors in the line 
+    drawing algorithm.
+
+    Returns:
+        - True if the actual number of colored pixels matches the expected count, indicating correct line integrity.
+        - False otherwise.
+*/
 bool checkLineIntegrity(const Surface& surface, unsigned int x, unsigned int y, bool isHorizontal, const ColorU8_sRGB& expectedColor, int expectedPixelCount) {
     int pixelCount = countColoredPixels(surface, x, y, isHorizontal, expectedColor);
     return pixelCount == expectedPixelCount;

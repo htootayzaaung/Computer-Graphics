@@ -4,64 +4,35 @@
 #include "../draw2d/draw.hpp"
 
 /*
-// Helper function to verify the continuity at a point
-bool verifyContinuity(const Surface& surface, const Vec2f& point, const ColorU8_sRGB& color) {
-    // Check the pixel at the point itself
-    if (!pixelMatchesColor(surface, point, color)) {
-        return false;
-    }
+    This test aims to verify that when two lines are drawn end-to-end, there is no gap between them. This continuity check is essential 
+    for ensuring that lines appear as expected on the screen without any breaks, which can be visually jarring and technically incorrect.
 
-    // Check the pixels immediately around the point for continuity
-    std::vector<Vec2f> pointsToCheck = {
-        {point.x - 1, point.y}, // left
-        {point.x + 1, point.y}, // right
-        {point.x, point.y - 1}, // top
-        {point.x, point.y + 1}  // bottom
-    };
+    This test draws two lines : one from p0 to p1 and another from p1 to p2. Since p1 is the connecting point, the expectation is that the 
+    two lines together should look like a single continuous line on the surface.
 
-    for (const auto& p : pointsToCheck) {
-        if (!pixelMatchesColor(surface, p, color)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-TEST_CASE("Continuous Line Drawing Test", "[lines]") {
-    Surface surface(200, 200);
-    surface.clear();
-    ColorU8_sRGB white{255, 255, 255}; // Color for the lines
-
-    Vec2f p0{10.f, 100.f};
-    Vec2f p1{100.f, 100.f}; // Connection point
-    Vec2f p2{200.f, 100.f};
-
-    // Draw the lines
-    draw_line_solid(surface, p0, p1, white);
-    draw_line_solid(surface, p1, p2, white);
-
-    // Verify continuity at connection point
-    REQUIRE(verifyContinuity(surface, p1, white));
-}
 */
-
 TEST_CASE("Continuous Line Drawing Test", "[lines]") {
     Surface surface(200, 200);
     surface.clear();
     ColorU8_sRGB white{255, 255, 255}; // Color for the lines
 
-    Vec2f p0{10.f, 100.f};
-    Vec2f p1{100.f, 100.f}; // Connection point
+    Vec2f p0{10.f, 100.f};          
+    Vec2f p1{100.f, 100.f}; 
     Vec2f p2{200.f, 100.f};
 
-    // Draw the lines
+    // Two calls to draw_line_solid draw two continuous horizontal lines that should connect seamlessly at p1.
     draw_line_solid(surface, p0, p1, white);
     draw_line_solid(surface, p1, p2, white);
 
-    // Check the number of pixels that have 2 neighbors
+    /*
+        - The count_pixel_neighbours function is called to analyze the drawn lines. It counts how many neighbors each pixel has. For a perfectly 
+        drawn continuous line, each pixel except the start and end should have exactly two neighbors.
+
+        - counts[2] should equal the length of the line minus the two end pixels.
+
+    */
     auto const counts = count_pixel_neighbours(surface);
-    std::size_t expectedCount = static_cast<std::size_t>(p2.x) - static_cast<std::size_t>(p0.x) - 1;
+    std::size_t expectedCount = static_cast<std::size_t>(p2.x) - static_cast<std::size_t>(p0.x) - 2;
 
     // Verify the number of pixels with exactly 2 neighbors (should match the expected count)
     REQUIRE(counts[2] == expectedCount);
