@@ -239,17 +239,33 @@ int main( int aArgc, char* aArgv[] ) try
             		{255, 0, 0}); // Solid red color
     		} break;
 
-			/*
-    		case 6: {
-        		// Edge Clipping Test
-        		// Draw a triangle that extends beyond the surface boundaries.
-        		draw_triangle_solid(surface,
-            		{-50.f, -50.f},
-            		{fbwidth + 50.f, -50.f},
-            		{fbwidth / 2.f, fbheight + 50.f},
-            		{255, 255, 0}); // Yellow color
-    		} break;
-			*/
+            case 5: {
+                // Interpolation Across Triangle
+                // Draw a triangle with vertices each assigned a primary color and checks interpolation across the triangle.
+                draw_triangle_interp( surface, 
+                    { fbwidth * 0.5f, fbheight - 100.f },
+                    { 100.f, 100.f },
+                    { fbwidth - 100.f, 100.f },
+                    { 1.f, 0.f, 0.f }, // Red at vertex 1
+                    { 0.f, 1.f, 0.f }, // Green at vertex 2
+                    { 0.f, 0.f, 1.f }  // Blue at vertex 3
+                );
+                break;
+            }
+
+            case 6: {
+                // Edge Clipping Test
+                // Draw a triangle that extends beyond the surface boundaries and checks edge clipping.
+                draw_triangle_interp( surface, 
+                    { fbwidth * 0.5f, fbheight * 0.5f },
+                    { -fbwidth * 0.1f, fbheight * 0.1f },
+                    { fbwidth * 1.1f, fbheight * 0.1f },
+                    { 1.f, 0.f, 0.f }, // Red at vertex 1
+                    { 0.f, 1.f, 0.f }, // Green at vertex 2 (off-screen)
+                    { 0.f, 0.f, 1.f }  // Blue at vertex 3 (off-screen)
+                );
+                break;
+            }
 			//TODO: your own tests here?
 			//TODO: your own tests here?
 		}
