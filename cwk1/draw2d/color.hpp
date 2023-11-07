@@ -58,6 +58,17 @@ struct ColorU8_sRGB
 	std::uint8_t r;
 	std::uint8_t g;
 	std::uint8_t b;
+
+	/*##############################		I HAVE CREATED THE FOLLOWING OVERLOADED OPERATORS		######################*/
+	// Define equality operator for ColorU8_sRGB
+    bool operator==(const ColorU8_sRGB& other) const {
+        return r == other.r && g == other.g && b == other.b;
+    }
+
+    // Define inequality operator for ColorU8_sRGB
+    bool operator!=(const ColorU8_sRGB& other) const {
+        return !(*this == other);
+    }
 };
 
 /** sRGB color with alpha channel
