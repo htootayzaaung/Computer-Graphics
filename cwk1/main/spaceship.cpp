@@ -16,7 +16,7 @@
  *     Your decision will not affect the marking of Task 2.7 in CW1.
  *
  *     If you wish to be credited (name + year when you took the computer
- *     graphics mdoule) in a CREDITS.txt or similar file with future exercises
+ *     graphics module) in a CREDITS.txt or similar file with future exercises
  *     and/or courseworks, please indicate this by ticking the following box
  *     [X] I wish to have my name + year listed with assignments that use my
  *         space ship shape.
@@ -39,53 +39,56 @@
 #define SPACESHIP_DEFAULT 1
 #define SPACESHIP_CUSTOM 2
 
-#ifndef SPACESHIP
-#	define SPACESHIP SPACESHIP_DEFAULT
-#endif
+// Ensure SPACESHIP is defined. Uncomment the one you need.
+// #define SPACESHIP SPACESHIP_DEFAULT
+#define SPACESHIP SPACESHIP_CUSTOM
 
 LineStrip make_spaceship_shape()
 {
-#	if SPACESHIP == SPACESHIP_DEFAULT
-	static constexpr float xs[] = { 250.f, 200.f, 150.f, 100.f, 000.f, 040.f, -50.f, -140.f, -170.f };
-	static constexpr float ys[] = { 190.f, 180.f, 70.f, 50.f, 30.f, 20.f };
-
-	LineStrip spaceship{ { 
-		{ 0.2f * xs[0], 0.2f * +ys[5] }, // upper half. starts at front, goes towards the back
-		{ 0.2f * xs[1], 0.2f * +ys[3] },
-		{ 0.2f * xs[2], 0.2f * +ys[3] },
-		{ 0.2f * xs[3], 0.2f * +ys[4] }, 
-		{ 0.2f * xs[4], 0.2f * +ys[4] },
-		{ 0.2f * xs[4], 0.2f * +ys[2] },
-		{ 0.2f * xs[5], 0.2f * +ys[1] },
-		{ 0.2f * xs[6], 0.2f * +ys[0] },
-		{ 0.2f * xs[8], 0.2f * +ys[2] },
-		{ 0.2f * xs[7], 0.2f * +ys[3] },
-
-		{ 0.2f * xs[7], 0.2f * -ys[3] }, // lower half, starts at the back and goes towards the front
-		{ 0.2f * xs[8], 0.2f * -ys[2] }, // this is essentially the same as the upper half, except in reverse.
-		{ 0.2f * xs[6], 0.2f * -ys[0] },
-		{ 0.2f * xs[5], 0.2f * -ys[1] },
-		{ 0.2f * xs[4], 0.2f * -ys[2] },
-		{ 0.2f * xs[4], 0.2f * -ys[4] },
-		{ 0.2f * xs[3], 0.2f * -ys[4] }, 
-		{ 0.2f * xs[2], 0.2f * -ys[3] },
-		{ 0.2f * xs[1], 0.2f * -ys[3] },
-		{ 0.2f * xs[0], 0.2f * -ys[5] }, 
-
-		{ 0.2f * xs[0], 0.2f * +ys[5] } // link back to beginning (connects both sides at the "front")
-	} };
-#	elif SPACESHIP == SPACESHIP_CUSTOM
-	LineStrip spaceship{ {
-
-		// TODO: YOUR DESIGN GOES HERE
-	
-	} };
-#	endif
-
-	if( spaceship.vertex_count() > 32 )
-	{
-		std::fprintf( stderr, "WARNING: you must use at most 32 points for your custom spaceship design. You are currently using %zu\n", spaceship.vertex_count() );
-	}
-
-	return spaceship;
+#if SPACESHIP == SPACESHIP_CUSTOM
+    static constexpr Vec2f customPoints[] = {
+        // Custom spaceship design goes here
+        { 0.0f, 0.0f }, // Nose of the spaceship
+        { -20.0f, 40.0f }, // Start of the wing curve on one side
+        { -100.0f, 100.0f }, // Tip of the wing on one side
+        { -80.0f, 80.0f }, // Inner wing curve back towards the body
+        { -50.0f, 30.0f }, // Body to rear wing edge
+        { -120.0f, 0.0f }, // End of the wing on one side
+        { -50.0f, -30.0f }, // Body to rear wing edge on the other side
+        { -80.0f, -80.0f }, // Inner wing curve on the other side
+        { -100.0f, -100.0f }, // Tip of the wing on the other side
+        { -20.0f, -40.0f }, // Start of the wing curve back to the nose
+        { 0.0f, 0.0f } // Back to the nose to close the shape
+    };
+    return LineStrip(customPoints);
+#elif SPACESHIP == SPACESHIP_DEFAULT
+    static constexpr float xs[] = { 250.f, 200.f, 150.f, 100.f, 000.f, 040.f, -50.f, -140.f, -170.f };
+    static constexpr float ys[] = { 190.f, 180.f, 70.f, 50.f, 30.f, 20.f };
+    static constexpr Vec2f defaultPoints[] = {
+        { 0.2f * xs[0], 0.2f * +ys[5] },
+        { 0.2f * xs[1], 0.2f * +ys[3] },
+        { 0.2f * xs[2], 0.2f * +ys[3] },
+        { 0.2f * xs[3], 0.2f * +ys[4] },
+        { 0.2f * xs[4], 0.2f * +ys[4] },
+        { 0.2f * xs[4], 0.2f * +ys[2] },
+        { 0.2f * xs[5], 0.2f * +ys[1] },
+        { 0.2f * xs[6], 0.2f * +ys[0] },
+        { 0.2f * xs[8], 0.2f * +ys[2] },
+        { 0.2f * xs[7], 0.2f * +ys[3] },
+        { 0.2f * xs[7], 0.2f * -ys[3] },
+        { 0.2f * xs[8], 0.2f * -ys[2] },
+        { 0.2f * xs[6], 0.2f * -ys[0] },
+        { 0.2f * xs[5], 0.2f * -ys[1] },
+        { 0.2f * xs[4], 0.2f * -ys[2] },
+        { 0.2f * xs[4], 0.2f * -ys[4] },
+        { 0.2f * xs[3], 0.2f * -ys[4] },
+        { 0.2f * xs[2], 0.2f * -ys[3] },
+        { 0.2f * xs[1], 0.2f * -ys[3] },
+        { 0.2f * xs[0], 0.2f * -ys[5] },
+        { 0.2f * xs[0], 0.2f * +ys[5] }
+    };
+    return LineStrip(defaultPoints);
+#endif
 }
+
+
