@@ -80,13 +80,11 @@ BENCHMARK_CAPTURE(benchmark_blit_masked, mortal_kombat, "assets/mortal_kombat.pn
     ->Args({1920, 1080})
     ->Args({7680, 4320});
 
-/*
 BENCHMARK_CAPTURE(benchmark_blit_masked, earth, "assets/earth.png")
     ->Args({320, 240})
     ->Args({1280, 720})
     ->Args({1920, 1080})
     ->Args({7680, 4320});
-*/
 
 BENCHMARK_CAPTURE(blit_no_alpha_loops_, impostor, "assets/impostor.png")
     ->Args({320, 240})
@@ -100,13 +98,13 @@ BENCHMARK_CAPTURE(blit_no_alpha_loops_, mortal_kombat, "assets/mortal_kombat.png
     ->Args({1920, 1080})
     ->Args({7680, 4320});
 
-/*
+
 BENCHMARK_CAPTURE(blit_no_alpha_loops_, mortal_kombat, "assets/earth.png")
     ->Args({320, 240})
     ->Args({1280, 720})
     ->Args({1920, 1080})
     ->Args({7680, 4320});
-*/
+
 
 BENCHMARK_CAPTURE(blit_no_alpha_memcpy_, impostor, "assets/impostor.png")
     ->Args({320, 240})
@@ -120,11 +118,11 @@ BENCHMARK_CAPTURE(blit_no_alpha_memcpy_, mortal_kombat, "assets/mortal_kombat.pn
     ->Args({1920, 1080})
     ->Args({7680, 4320});
 
-/*
+
 BENCHMARK_CAPTURE(blit_no_alpha_memcpy_, mortal_kombat, "assets/earth.png")
     ->Args({320, 240})
     ->Args({1280, 720})
     ->Args({1920, 1080})
     ->Args({7680, 4320});
-*/
+
 BENCHMARK_MAIN();

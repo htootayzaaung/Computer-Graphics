@@ -19,48 +19,87 @@ void draw_line_dda(Surface& surface, int x1, int y1, int x2, int y2, ColorU8_sRG
     }
 }
 
-// Benchmark function for DDA line drawing
 void line_drawing_dda_benchmark(benchmark::State& aState) {
     auto const width = std::uint32_t(aState.range(0));
     auto const height = std::uint32_t(aState.range(1));
 
     Surface surface(width, height);
-    ColorU8_sRGB color = {255, 255, 255}; // White color for the line
+
+    // Four specific cases: horizontal, vertical, diagonal, and steep
+    Vec2f begin, end;
+    if (aState.thread_index() == 0) {
+        // Horizontal line
+        begin = {0.0f, static_cast<float>(height) / 2.0f};
+        end = {static_cast<float>(width) - 1.0f, static_cast<float>(height) / 2.0f};
+    } else if (aState.thread_index() == 1) {
+        // Vertical line
+        begin = {static_cast<float>(width) / 2.0f, 0.0f};
+        end = {static_cast<float>(width) / 2.0f, static_cast<float>(height) - 1.0f};
+    } else if (aState.thread_index() == 2) {
+        // Diagonal line
+        begin = {0.0f, 0.0f};
+        end = {static_cast<float>(width) - 1.0f, static_cast<float>(height) - 1.0f};
+    } else if (aState.thread_index() == 3) {
+        // Steep line
+        begin = {0.0f, 0.0f};
+        end = {static_cast<float>(height) - 1.0f, static_cast<float>(width) - 1.0f};
+    }
 
     for (auto _ : aState) {
         surface.clear();
-        draw_line_dda(surface, 0, 0, width - 1, height - 1, color);
+        draw_line_dda(surface, static_cast<int>(begin.x), static_cast<int>(begin.y), static_cast<int>(end.x), static_cast<int>(end.y), {255, 255, 255}); // White color for the line
         benchmark::ClobberMemory();
     }
 
     aState.SetBytesProcessed(static_cast<int64_t>(width + height - 1) * aState.iterations());
 }
 
-// Assuming the Bresenham's line drawing function is named draw_line_solid and declared in draw.hpp
 void line_drawing_bresenham_benchmark(benchmark::State& aState) {
     auto const width = std::uint32_t(aState.range(0));
     auto const height = std::uint32_t(aState.range(1));
 
     Surface surface(width, height);
-    ColorU8_sRGB color = {255, 255, 255}; // White color for the line
-    Vec2f begin{0, 0};
-    Vec2f end{static_cast<float>(width - 1), static_cast<float>(height - 1)};
+
+    // Four specific cases: horizontal, vertical, diagonal, and steep
+    Vec2f begin, end;
+    if (aState.thread_index() == 0) {
+        // Horizontal line
+        begin = {0.0f, static_cast<float>(height) / 2.0f};
+        end = {static_cast<float>(width) - 1.0f, static_cast<float>(height) / 2.0f};
+    } else if (aState.thread_index() == 1) {
+        // Vertical line
+        begin = {static_cast<float>(width) / 2.0f, 0.0f};
+        end = {static_cast<float>(width) / 2.0f, static_cast<float>(height) - 1.0f};
+    } else if (aState.thread_index() == 2) {
+        // Diagonal line
+        begin = {0.0f, 0.0f};
+        end = {static_cast<float>(width) - 1.0f, static_cast<float>(height) - 1.0f};
+    } else if (aState.thread_index() == 3) {
+        // Steep line
+        begin = {0.0f, 0.0f};
+        end = {static_cast<float>(height) - 1.0f, static_cast<float>(width) - 1.0f};
+    }
 
     for (auto _ : aState) {
         surface.clear();
-        draw_line_solid(surface, begin, end, color); // Call your Bresenham's line drawing function here
+        draw_line_solid(surface, begin, end, {255, 255, 255}); // White color for the line
         benchmark::ClobberMemory();
     }
+
 
     aState.SetBytesProcessed(static_cast<int64_t>(width + height - 1) * aState.iterations());
 }
 
 // Register the benchmark functions
 BENCHMARK(line_drawing_dda_benchmark)
+    ->Args({320, 240})
+    ->Args({1280, 720})
     ->Args({1920, 1080})
     ->Args({7680, 4320});
 
 BENCHMARK(line_drawing_bresenham_benchmark)
+    ->Args({320, 240})
+    ->Args({1280, 720})
     ->Args({1920, 1080})
     ->Args({7680, 4320});
 
