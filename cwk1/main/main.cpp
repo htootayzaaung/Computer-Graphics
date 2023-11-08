@@ -224,6 +224,7 @@ int main( int aArgc, char* aArgv[] ) try
 
 		background.draw( surface );
 		asteroids.draw( surface );
+		surface.set_pixel_srgb(0, 0, {255, 255, 0});
 
 		auto const rot = make_rotation_2d( state.player.angle );
 		auto const offs = Vec2f{ fbwidth*0.5f, fbheight*0.5f };

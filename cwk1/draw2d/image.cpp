@@ -56,12 +56,12 @@ std::unique_ptr<ImageRGBA> load_image( char const* aPath )
 
 	Alpha-masking involves using an alpha channel to determine the transparency level of each pixel. In alpha-masking, pixels with lower alpha 
 	values (more transparent) can be ignored or blended with background colors, while pixels with higher alpha values (more opaque) are rendered 
-	prominently [7].
+	prominently.
 
 	My implementation uses both of Image blitting and alpha-masking. It transfers pixels from one image to a surface (blitting), and it checks
 	the alpha value of each pixel to determine whether it should be copied over (alpha-masking).
 
-	My implementation of the blit iterates through each pixel of the source image. If a pixel's alpha value is above a certain threshold (128 in your case), 
+	My implementation of the blit iterates through each pixel of the source image. If a pixel's alpha value is above a certain threshold (128), 
 	the pixel is considered visible and is therefore copied to a corresponding location on the target surface. The location is calculated by adding an offset 
 	to the source image's pixel coordinates, converting them to the target surface's coordinate space.
 

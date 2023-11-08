@@ -4,18 +4,26 @@
 #include "../draw2d/surface.hpp"
 
 // DDA line drawing function
-void draw_line_dda(Surface& surface, int x1, int y1, int x2, int y2, ColorU8_sRGB color) {
-    int dx = x2 - x1;
+void draw_line_dda(Surface& surface, int x1, int y1, int x2, int y2, ColorU8_sRGB color) { // [8] - https://www.geeksforgeeks.org/dda-line-generation-algorithm-computer-graphics/
+    
+    // calculate dx and dy 
+    int dx = x2 - x1;   
     int dy = y2 - y1;
+
+    // calculate steps required for generating pixels 
     int steps = std::max(std::abs(dx), std::abs(dy));
+
+    // calculate increment in x and y for each steps   
     float xInc = dx / static_cast<float>(steps);
-    float yInc = dy / static_cast<float>(steps);
+    float yInc = dy / static_cast<float>(steps);  
+
+    // Put pixel for each step       
     float x = x1;
     float y = y1;
     for (int i = 0; i <= steps; ++i) {
-        surface.set_pixel_srgb(static_cast<int>(std::round(x)), static_cast<int>(std::round(y)), color);
-        x += xInc;
-        y += yInc;
+        surface.set_pixel_srgb(static_cast<int>(std::round(x)), static_cast<int>(std::round(y)), color);        // put pixel at (X,Y) 
+        x += xInc;      // increment in x at each step 
+        y += yInc;      // increment in y at each step
     }
 }
 

@@ -2,11 +2,19 @@
  helpers.hpp ../draw2d/forward.hpp ../draw2d/../vmlib/vec2.hpp \
  ../draw2d/color.hpp ../draw2d/color.inl ../draw2d/surface.hpp \
  ../draw2d/color.hpp ../draw2d/surface.inl
+
 helpers.hpp:
+
 ../draw2d/forward.hpp:
+
 ../draw2d/../vmlib/vec2.hpp:
+
 ../draw2d/color.hpp:
+
 ../draw2d/color.inl:
+
 ../draw2d/surface.hpp:
+
 ../draw2d/color.hpp:
+
 ../draw2d/surface.inl:
