@@ -34,7 +34,9 @@ void line_drawing_dda_benchmark(benchmark::State& aState) {
     Surface surface(width, height);
 
     // Four specific cases: horizontal, vertical, diagonal, and steep
-    Vec2f begin, end;
+    Vec2f begin = {0.0f, 0.0f};
+    Vec2f end = {0.0f, 0.0f};
+    
     if (aState.thread_index() == 0) {
         // Horizontal line
         begin = {0.0f, static_cast<float>(height) / 2.0f};
@@ -69,7 +71,9 @@ void line_drawing_bresenham_benchmark(benchmark::State& aState) {
     Surface surface(width, height);
 
     // Four specific cases: horizontal, vertical, diagonal, and steep
-    Vec2f begin, end;
+    Vec2f begin = {0.0f, 0.0f};
+    Vec2f end = {0.0f, 0.0f};
+    
     if (aState.thread_index() == 0) {
         // Horizontal line
         begin = {0.0f, static_cast<float>(height) / 2.0f};
