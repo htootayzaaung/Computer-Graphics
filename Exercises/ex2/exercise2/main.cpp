@@ -128,7 +128,9 @@ int main() try
 	OGL_CHECKPOINT_ALWAYS();
 
 	// TODO: global GL setup goes here
-
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	glEnable(GL_CULL_FACE);
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 	OGL_CHECKPOINT_ALWAYS();
 
 	// Get actual framebuffer size.
@@ -148,9 +150,65 @@ int main() try
 
 	state.prog = &prog;
 
+
 	// Create vertex buffers and VAO
 	//TODO: create VBOs and VAO
+	
+	// Define the vertex positions
+	static float const kPositions[] = {
+    	0.f, 0.8f,   // Vertex 0 position
+    	-0.7f, -0.8f, // Vertex 1 position
+    	0.7f, -0.8f  // Vertex 2 position
+	};
 
+	// Generate a buffer name (ID) for the positions
+	GLuint positionVBO = 0;
+	glGenBuffers(1, &positionVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kPositions), kPositions, GL_STATIC_DRAW);	
+
+	// Define the vertex colors
+	static float const kColors[] = {
+    	1.f, 1.f, 0.f, // Vertex 0 color (Yellow)
+    	1.f, 0.f, 1.f, // Vertex 1 color (Magenta)
+    	0.f, 1.f, 1.f  // Vertex 2 color (Cyan)
+	};
+
+	// Generate a buffer name (ID) for the colors
+	GLuint colorVBO = 0;
+	glGenBuffers(1, &colorVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kColors), kColors, GL_STATIC_DRAW);
+
+	// Start of VAO setup
+	GLuint vao = 0;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	// Position attribute
+	glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
+	glVertexAttribPointer(
+		0, // location = 0 in vertex shader
+		2, GL_FLOAT, GL_FALSE, // 2 floats, not normalized to [0..1] (GL FALSE)
+		0, // stride = 0 indicates that there is no padding between inputs
+		0 // data starts at offset 0 in the VBO.
+	);
+	glEnableVertexAttribArray(0);
+
+	// Color attribute
+	glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	// Unbind the VAO
+	glBindVertexArray(0);
+	glBindBuffer( GL_ARRAY_BUFFER, 0 );
+	
+	// Clean up buffers
+	// Note: these are not deleted fully, as the VAO holds a reference to them.
+	glDeleteBuffers( 1, &colorVBO );
+	glDeleteBuffers( 1, &positionVBO );
+	
 	// Animation state
 	auto last = Clock::now();
 
@@ -192,19 +250,52 @@ int main() try
 		if( angle >= 2.f*kPi_ )
 			angle -= 2.f*kPi_;
 
-		// Draw scene
-		OGL_CHECKPOINT_DEBUG();
 
 		//TODO: draw frame
 
+		// Clear color buffer to specified clear color (glClearColor())
+		glClear( GL_COLOR_BUFFER_BIT );
+
+		// We want to draw with our program..
+		glUseProgram( prog.programId() );
+
+		// Specify the base color (uBaseColor in location 0 in the fragment shader)
+		static float const baseColor[] = { 0.2f, 1.f, 1.f };
+		glUniform3fv( 0 /* locationin shaders */, 1, baseColor );
+
+		// Source input as defined in our VAO
+		glBindVertexArray( vao );
+
+
+		/*
+		// Draw scene
 		OGL_CHECKPOINT_DEBUG();
+
+		// Clear the framebuffer to the set clear color
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Use the shader program
+		glUseProgram(state.prog->programId());
+		*/
+
+		// Draw the triangle
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+
+		// Unbind the VAO
+		glBindVertexArray(0);
+		glUseProgram( 0 );
+
+		//OGL_CHECKPOINT_DEBUG();
 
 		// Display results
 		glfwSwapBuffers( window );
 	}
 
 	// Cleanup.
-	state.prog = nullptr;
+	glUseProgram(0); // Unbind any active shader program
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &positionVBO);
+	glDeleteBuffers(1, &colorVBO);
 
 	//TODO: additional cleanup
 	
@@ -271,4 +362,3 @@ namespace
 			glfwDestroyWindow( window );
 	}
 }
-
