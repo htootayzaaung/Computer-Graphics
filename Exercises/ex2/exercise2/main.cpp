@@ -150,7 +150,6 @@ int main() try
 
 	state.prog = &prog;
 
-
 	// Create vertex buffers and VAO
 	//TODO: create VBOs and VAO
 	
@@ -251,6 +250,10 @@ int main() try
 			angle -= 2.f*kPi_;
 
 
+		// Inside the main loop, after calculating 'angle':
+		Mat22f rot = make_rotation_2d(angle);
+
+
 		//TODO: draw frame
 
 		// Clear color buffer to specified clear color (glClearColor())
@@ -259,6 +262,9 @@ int main() try
 		// We want to draw with our program..
 		glUseProgram( prog.programId() );
 
+		// Inside the main loop, before drawing the triangle:
+		glUniformMatrix2fv(1, 1, GL_TRUE, &rot._00);
+
 		// Specify the base color (uBaseColor in location 0 in the fragment shader)
 		static float const baseColor[] = { 0.2f, 1.f, 1.f };
 		glUniform3fv( 0 /* locationin shaders */, 1, baseColor );
@@ -266,26 +272,12 @@ int main() try
 		// Source input as defined in our VAO
 		glBindVertexArray( vao );
 
-
-		/*
-		// Draw scene
-		OGL_CHECKPOINT_DEBUG();
-
-		// Clear the framebuffer to the set clear color
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		// Use the shader program
-		glUseProgram(state.prog->programId());
-		*/
-
 		// Draw the triangle
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// Unbind the VAO
 		glBindVertexArray(0);
 		glUseProgram( 0 );
-
-		//OGL_CHECKPOINT_DEBUG();
 
 		// Display results
 		glfwSwapBuffers( window );
@@ -297,8 +289,6 @@ int main() try
 	glDeleteBuffers(1, &positionVBO);
 	glDeleteBuffers(1, &colorVBO);
 
-	//TODO: additional cleanup
-	
 	return 0;
 }
 catch( std::exception const& eErr )
