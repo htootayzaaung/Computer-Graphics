@@ -3,11 +3,11 @@
 layout(location = 0) in vec3 position; // Vertex position (x, y, z)
 layout(location = 1) in vec3 color;    // Vertex color (r, g, b)
 
-uniform mat4 uMVPMatrix; // Model-View-Projection matrix
+layout(location = 0) uniform mat4 uProjCameraWorld; // Add this line
 
 out vec3 fragColor; // Pass color to fragment shader
 
 void main() {
     fragColor = color; // Pass color to fragment shader
-    gl_Position = uMVPMatrix * vec4(position, 1.0); // Apply MVP matrix to vertex position
+    gl_Position = uProjCameraWorld * vec4(position, 1.0); // Transform vertex position
 }

@@ -205,8 +205,6 @@ int main() try
 	// Unbind the VAO to prevent accidentally modifying it
 	glBindVertexArray(0);
 
-	Mat44f identityMatrix = kIdentity44f; // Define the identity matrix using the constant from mat44.hpp
-
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
 	{
@@ -261,23 +259,17 @@ int main() try
 
 		// Update: compute matrices
 		//TODO: define and compute projCameraWorld matrix
+		Mat44f model2world = make_rotation_y(angle);
+		Mat44f world2camera = make_translation({0.f, 0.f, -10.f});
 
-		// You need a perspective projection matrix for 3D rendering
-		float aspectRatio = fbwidth / fbheight;
-		Mat44f projectionMatrix = make_perspective_projection(kPi_ / 4, aspectRatio, 0.1f, 100.0f);
-
-		// For the view matrix, let's say we position our camera 'radius' units back along the Z-axis and look at the origin
-		Mat44f viewMatrix = lookAt(
-    		Vec3f(0.0f, 0.0f, state.camControl.radius),
-    		Vec3f(0.0f, 0.0f, 0.0f),
-    		Vec3f(0.0f, 1.0f, 0.0f)
+		Mat44f projection = make_perspective_projection(
+    		60.f * 3.1415926f / 180.f, // Field of view of 60 degrees, converted to radians
+    		fbwidth/float(fbheight),    // Aspect ratio
+    		0.1f, 100.0f                // Near and far planes
 		);
 
-		// For the model matrix, we'll apply a simple rotation about the Y-axis
-		Mat44f modelMatrix = rotateY(angle);
-
-		// Combine them to get the model-view-projection matrix
-		Mat44f mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
+		// Concatenate the transformations to create a single matrix
+		Mat44f projCameraWorld = projection * world2camera * model2world;
 		
 		// Draw scene
 		OGL_CHECKPOINT_DEBUG();
@@ -292,8 +284,11 @@ int main() try
     	// Use shader program
     	glUseProgram(prog.programId());
 
-    	// Set the MVP matrix uniform in the shader
-		glUniformMatrix4fv(glGetUniformLocation(prog.programId(), "uMVPMatrix"), 1, GL_FALSE, &projectionMatrix.v[0]);
+		// Set the MVP matrix uniform in the shader
+    	glUniformMatrix4fv(
+        	glGetUniformLocation(prog.programId(), "uProjCameraWorld"), // Get the uniform's location
+        	1, GL_TRUE, projCameraWorld.v
+    	);
 
     	// Bind the VAO
     	glBindVertexArray(VAO);
