@@ -141,7 +141,7 @@ float length( Vec3f aVec ) noexcept
 // In vec3.hpp or a separate math utility header
 constexpr
 Vec3f normalize(const Vec3f& v) noexcept{
-    float len = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    float len = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     return (len != 0) ? Vec3f{v.x / len, v.y / len, v.z / len} : Vec3f{0, 0, 0};
 }
 

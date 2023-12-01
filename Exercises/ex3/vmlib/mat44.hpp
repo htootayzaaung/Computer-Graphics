@@ -112,8 +112,9 @@ Mat44f make_perspective_projection(float aFovInRadians, float aAspect, float aNe
     result(0, 0) = 1.f / (aAspect * tanHalfFovy);
     result(1, 1) = 1.f / (tanHalfFovy);
     result(2, 2) = -(aFar + aNear) / (aFar - aNear);
-    result(2, 3) = -1.f;
-    result(3, 2) = -(2.f * aFar * aNear) / (aFar - aNear);
+    result(2, 3) = -(2.f * aFar * aNear) / (aFar - aNear);
+    result(3, 2) = -1.f;
+    result(3, 3) = 0.f;
     return result;
 }
 
