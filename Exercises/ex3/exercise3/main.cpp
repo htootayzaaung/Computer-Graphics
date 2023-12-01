@@ -148,6 +148,9 @@ int main() try
 	OGL_CHECKPOINT_ALWAYS();
 
 	// TODO: global GL setup goes here
+	glEnable(GL_DEPTH_TEST); // Enable depth testing
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the clear color to black (or any other color you prefer)
+
 
 	OGL_CHECKPOINT_ALWAYS();
 
@@ -175,7 +178,34 @@ int main() try
 	float angle = 0.f;
 
 	// Create vertex buffers and VAO
+	
 	//TODO: create VBOs and VAO
+	GLuint VBOs[2], VAO;
+	glGenBuffers(2, VBOs); // Generate 2 VBOs, one for position and one for color
+	glGenVertexArrays(1, &VAO); // Generate a VAO
+
+	// Bind the Vertex Array Object first. This will remember all that is done to VBOs bound after it until it is unbound
+	glBindVertexArray(VAO);
+
+	// Position attribute
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubePositions), kCubePositions, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// Color attribute
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(kCubeColors), kCubeColors, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+
+	// Note: The above assumes you have your cube positions and colors in separate arrays. 
+	// Adjust as necessary for your data structure.
+
+	// Unbind the VAO to prevent accidentally modifying it
+	glBindVertexArray(0);
+
+	Mat44f identityMatrix = kIdentity44f; // Define the identity matrix using the constant from mat44.hpp
 
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
@@ -206,6 +236,10 @@ int main() try
 			glViewport( 0, 0, nwidth, nheight );
 		}
 
+	    // Clear the color and depth buffers
+    	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the clear color to black
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the buffers
+
 		// Update state
 		auto const now = Clock::now();
 		float dt = std::chrono::duration_cast<Secondsf>(now-last).count();
@@ -228,12 +262,50 @@ int main() try
 		// Update: compute matrices
 		//TODO: define and compute projCameraWorld matrix
 
+		// You need a perspective projection matrix for 3D rendering
+		float aspectRatio = fbwidth / fbheight;
+		Mat44f projectionMatrix = make_perspective_projection(kPi_ / 4, aspectRatio, 0.1f, 100.0f);
+
+		// For the view matrix, let's say we position our camera 'radius' units back along the Z-axis and look at the origin
+		Mat44f viewMatrix = lookAt(
+    		Vec3f(0.0f, 0.0f, state.camControl.radius),
+    		Vec3f(0.0f, 0.0f, 0.0f),
+    		Vec3f(0.0f, 1.0f, 0.0f)
+		);
+
+		// For the model matrix, we'll apply a simple rotation about the Y-axis
+		Mat44f modelMatrix = rotateY(angle);
+
+		// Combine them to get the model-view-projection matrix
+		Mat44f mvpMatrix = projectionMatrix * viewMatrix * modelMatrix;
+		
 		// Draw scene
 		OGL_CHECKPOINT_DEBUG();
 
 		//TODO: draw frame
 
 		OGL_CHECKPOINT_DEBUG();
+
+		// Clear the color and depth buffers
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    	// Use shader program
+    	glUseProgram(prog.programId());
+
+    	// Set the MVP matrix uniform in the shader
+		glUniformMatrix4fv(glGetUniformLocation(prog.programId(), "uMVPMatrix"), 1, GL_FALSE, &projectionMatrix.v[0]);
+
+    	// Bind the VAO
+    	glBindVertexArray(VAO);
+
+    	// Draw the cube
+    	glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    	// Unbind the VAO
+    	glBindVertexArray(0);
+
+    	// Unbind the shader program
+    	glUseProgram(0);
 
 		// Display results
 		glfwSwapBuffers( window );
@@ -243,7 +315,9 @@ int main() try
 	state.prog = nullptr;
 
 	//TODO: additional cleanup
-	
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(2, VBOs);
+
 	return 0;
 }
 catch( std::exception const& eErr )

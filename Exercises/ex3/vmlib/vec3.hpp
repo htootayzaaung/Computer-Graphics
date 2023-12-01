@@ -21,6 +21,8 @@ struct Vec3f
 		assert( aI < 3 );
 		return aI[&x]; // This is a bit sketchy.
 	}
+
+	constexpr Vec3f(float x, float y, float z) : x(x), y(y), z(z) {}
 };
 
 
@@ -134,6 +136,22 @@ float length( Vec3f aVec ) noexcept
 	// calls std::sqrt() unconditionally, so length() cannot be marked
 	// constexpr itself.
 	return std::sqrt( dot( aVec, aVec ) );
+}
+
+// In vec3.hpp or a separate math utility header
+constexpr
+Vec3f normalize(const Vec3f& v) noexcept{
+    float len = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    return (len != 0) ? Vec3f{v.x / len, v.y / len, v.z / len} : Vec3f{0, 0, 0};
+}
+
+constexpr
+Vec3f cross(const Vec3f& a, const Vec3f& b) noexcept {
+    return Vec3f{
+        a.y * b.z - a.z * b.y,
+        a.z * b.x - a.x * b.z,
+        a.x * b.y - a.y * b.x
+    };
 }
 
 #endif // VEC3_HPP_5710DADF_17EF_453C_A9C8_4A73DC66B1CD
