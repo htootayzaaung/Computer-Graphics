@@ -149,7 +149,7 @@ int main() try
 
 	// TODO: global GL setup goes here
 	glEnable(GL_DEPTH_TEST); // Enable depth testing
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the clear color to black (or any other color you prefer)
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 
 
 	OGL_CHECKPOINT_ALWAYS();
@@ -235,7 +235,6 @@ int main() try
 		}
 
 	    // Clear the color and depth buffers
-    	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Set the clear color to black
     	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the buffers
 
 		// Update state
