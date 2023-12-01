@@ -205,6 +205,10 @@ int main() try
 	// Unbind the VAO to prevent accidentally modifying it
 	glBindVertexArray(0);
 
+	// Define the orbit radius and speed (can be constants or part of a state structure)
+	const float orbitRadius = 3.0f;
+	const float orbitSpeed = 1.0f;
+
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
 	{
@@ -270,50 +274,53 @@ int main() try
 		// Concatenate the transformations to create a single matrix
 		Mat44f projCameraWorld = projection * world2camera * model2world;
 		
-		// Draw scene
-		OGL_CHECKPOINT_DEBUG();
+		// Draw the first cube
+    	OGL_CHECKPOINT_DEBUG();
 
-		//TODO: draw frame
-
-		OGL_CHECKPOINT_DEBUG();
-
-		// Clear the color and depth buffers
-    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    	// Use shader program
     	glUseProgram(prog.programId());
-
-		// Set the MVP matrix uniform in the shader
     	glUniformMatrix4fv(
-        	glGetUniformLocation(prog.programId(), "uProjCameraWorld"), // Get the uniform's location
+        	glGetUniformLocation(prog.programId(), "uProjCameraWorld"),
         	1, GL_TRUE, projCameraWorld.v
     	);
-
-    	// Bind the VAO
     	glBindVertexArray(VAO);
-
-    	// Draw the cube
     	glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    	// Unbind the VAO
     	glBindVertexArray(0);
-
-    	// Unbind the shader program
     	glUseProgram(0);
 
-		// Display results
-		glfwSwapBuffers( window );
-	}
+    	OGL_CHECKPOINT_DEBUG();
 
-	// Cleanup.
-	state.prog = nullptr;
+    	// Update and render the second cube
+    	float orbitAngle = glfwGetTime() * orbitSpeed; // Or use your own time mechanism
+    	float x = cos(orbitAngle) * orbitRadius;
+    	float z = sin(orbitAngle) * orbitRadius;
+    	Mat44f modelToWorldSecondCube = make_translation(Vec3f{x, 0.0f, z}) * make_rotation_y(orbitAngle);
 
-	//TODO: additional cleanup
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(2, VBOs);
+    	// Set the model matrix for the second cube
+    	glUseProgram(prog.programId());
+    	glUniformMatrix4fv(
+        	glGetUniformLocation(prog.programId(), "uProjCameraWorld"),
+        	1, GL_TRUE, (projection * world2camera * modelToWorldSecondCube).v
+    	);
+
+    	glBindVertexArray(VAO);
+    	glDrawArrays(GL_TRIANGLES, 0, 36);
+    	glBindVertexArray(0);
+    	glUseProgram(0);
+
+    	// Display results
+    	glfwSwapBuffers( window );
+		}
+
+		// Cleanup.
+		state.prog = nullptr;
+
+		//TODO: additional cleanup
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(2, VBOs);
 
 	return 0;
 }
+
 catch( std::exception const& eErr )
 {
 	std::fprintf( stderr, "Top-level Exception (%s):\n", typeid(eErr).name() );
