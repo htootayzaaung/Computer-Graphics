@@ -101,6 +101,8 @@ int main() try
 	glfwWindowHint( GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE );
 #	endif // ~ !NDEBUG
 
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+
 	GLFWwindow* window = glfwCreateWindow(
 		1280,
 		720,
@@ -133,6 +135,9 @@ int main() try
 	// This will load the OpenGL API. We mustn't make any OpenGL calls before this!
 	if( !gladLoadGLLoader( (GLADloadproc)&glfwGetProcAddress ) )
 		throw Error( "gladLoaDGLLoader() failed - cannot load GL API!" );
+
+	// Enable depth testing
+	glEnable(GL_DEPTH_TEST);
 
 	std::printf( "RENDERER %s\n", glGetString( GL_RENDERER ) );
 	std::printf( "VENDOR %s\n", glGetString( GL_VENDOR ) );
@@ -263,13 +268,18 @@ int main() try
 		// Update: compute matrices
 		//TODO: define and compute projCameraWorld matrix
 		Mat44f model2world = make_rotation_y(angle);
-		Mat44f world2camera = make_translation({0.f, 0.f, -10.f});
 
 		Mat44f projection = make_perspective_projection(
     		60.f * 3.1415926f / 180.f, // Field of view of 60 degrees, converted to radians
     		fbwidth/float(fbheight),    // Aspect ratio
     		0.1f, 100.0f                // Near and far planes
 		);
+
+		// Update camera matrix
+    	Mat44f Rx = make_rotation_x(state.camControl.theta);
+    	Mat44f Ry = make_rotation_y(state.camControl.phi);
+    	Mat44f T = make_translation({0.f, 0.f, -state.camControl.radius});
+    	Mat44f world2camera = T * Rx * Ry;
 
 		// Concatenate the transformations to create a single matrix
 		Mat44f projCameraWorld = projection * world2camera * model2world;
