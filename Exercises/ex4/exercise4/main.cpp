@@ -158,13 +158,18 @@ int main() try
 	glViewport( 0, 0, iwidth, iheight );
 
 	// Load shader program
-	ShaderProgram prog( {
-		{ GL_VERTEX_SHADER, "assets/default.vert" },
-		{ GL_FRAGMENT_SHADER, "assets/default.frag" }
-	} );
+	ShaderProgram prog({
+    	{GL_VERTEX_SHADER, "assets/default.vert"},
+    	{GL_FRAGMENT_SHADER, "assets/default.frag"}
+	});
 
 	state.prog = &prog;
 	state.camControl.radius = 10.f;
+
+	// Load the Armadillo model
+	SimpleMeshData armadilloMesh = load_wavefront_obj("assets/Armadillo.obj");
+	GLuint armadilloVAO = create_vao(armadilloMesh);
+	std::size_t armadilloVertexCount = armadilloMesh.positions.size();
 
 	// Animation state
 	auto last = Clock::now();
@@ -172,15 +177,15 @@ int main() try
 	float angle = 0.f;
 
 	// Create vertex buffers and VAO
-	//TODO: create VBOs and VAO
-	auto testCylinder = make_cylinder(false, 16, {1.f, 0.f, 0.f});
-	GLuint vao = create_vao(testCylinder);
-	std::size_t vertexCount = testCylinder.positions.size();
+	// //TODO: create VBOs and VAO
+	// auto testCylinder = make_cylinder(false, 16, {1.f, 0.f, 0.f});
+	// GLuint vao = create_vao(testCylinder);
+	// std::size_t vertexCount = testCylinder.positions.size();
 
-	// Create cone mesh
-    auto coneMesh = make_cone(true, 16, {0.f, 1.f, 0.f}, kIdentity44f); // Example parameters
-    GLuint coneVAO = create_vao(coneMesh);
-    std::size_t coneVertexCount = coneMesh.positions.size();
+	// // Create cone mesh
+    // auto coneMesh = make_cone(true, 16, {0.f, 1.f, 0.f}, kIdentity44f); // Example parameters
+    // GLuint coneVAO = create_vao(coneMesh);
+    // std::size_t coneVertexCount = coneMesh.positions.size();
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
 	{
@@ -267,17 +272,21 @@ int main() try
         	1, GL_TRUE, projCameraWorld.v
     	);
 
-    	// Bind the VAO and draw the cylinder
-    	// Render the cylinder
-		glBindVertexArray(vao);
-    	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    	// // Bind the VAO and draw the cylinder
+    	// // Render the cylinder
+		// glBindVertexArray(vao);
+    	// glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    	// glBindVertexArray(0);
+
+		// // Render the cone
+        // glBindVertexArray(coneVAO);
+        // glDrawArrays(GL_TRIANGLES, 0, coneVertexCount);
+        // glBindVertexArray(0);
+
+		// Render the Armadillo
+    	glBindVertexArray(armadilloVAO);
+    	glDrawArrays(GL_TRIANGLES, 0, armadilloVertexCount);
     	glBindVertexArray(0);
-
-		// Render the cone
-        glBindVertexArray(coneVAO);
-        glDrawArrays(GL_TRIANGLES, 0, coneVertexCount);
-        glBindVertexArray(0);
-
 
     	// Reset the polygon mode to fill back for other objects that are not wireframed
     	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
