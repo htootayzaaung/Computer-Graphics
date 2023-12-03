@@ -177,6 +177,10 @@ int main() try
 	GLuint vao = create_vao(testCylinder);
 	std::size_t vertexCount = testCylinder.positions.size();
 
+	// Create cone mesh
+    auto coneMesh = make_cone(true, 16, {0.f, 1.f, 0.f}, kIdentity44f); // Example parameters
+    GLuint coneVAO = create_vao(coneMesh);
+    std::size_t coneVertexCount = coneMesh.positions.size();
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
 	{
@@ -230,55 +234,62 @@ int main() try
 		// Update: compute matrices
 		//TODO: define and compute projCameraWorld matrix
 
-	Mat44f model2world = make_rotation_y(angle); // This assumes angle is declared and updated correctly
+		Mat44f model2world = make_rotation_y(angle); // This assumes angle is declared and updated correctly
     
-    Mat44f projection = make_perspective_projection(
-        60.f * kPi_ / 180.f, // Field of view in radians
-        fbwidth / fbheight,   // Aspect ratio
-        0.1f,                 // Near plane
-        100.0f                // Far plane
-    );
+    	Mat44f projection = make_perspective_projection(
+        	60.f * kPi_ / 180.f, // Field of view in radians
+        	fbwidth / fbheight,   // Aspect ratio
+        	0.1f,                 // Near plane
+        	100.0f                // Far plane
+    	);
     
-    // Update camera matrix
-    Mat44f Rx = make_rotation_x(state.camControl.theta);
-    Mat44f Ry = make_rotation_y(state.camControl.phi);
-    Mat44f T = make_translation({0.f, 0.f, -state.camControl.radius});
-    Mat44f world2camera = T * Rx * Ry;
+    	// Update camera matrix
+    	Mat44f Rx = make_rotation_x(state.camControl.theta);
+    	Mat44f Ry = make_rotation_y(state.camControl.phi);
+    	Mat44f T = make_translation({0.f, 0.f, -state.camControl.radius});
+    	Mat44f world2camera = T * Rx * Ry;
     
-    // Concatenate the transformations to create a single matrix
-    Mat44f projCameraWorld = projection * world2camera * model2world;
+    	// Concatenate the transformations to create a single matrix
+    	Mat44f projCameraWorld = projection * world2camera * model2world;
 
-    // Clear the color and depth buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    	// Clear the color and depth buffers
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Set wireframe mode to visualize the mesh structure
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    	// Set wireframe mode to visualize the mesh structure
+    	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // Use the shader program
-    glUseProgram(prog.programId());
+    	// Use the shader program
+    	glUseProgram(prog.programId());
     
-    // Pass the projCameraWorld matrix to the shader
-    glUniformMatrix4fv(
-        glGetUniformLocation(prog.programId(), "uProjCameraWorld"),
-        1, GL_TRUE, projCameraWorld.v
-    );
+    	// Pass the projCameraWorld matrix to the shader
+    	glUniformMatrix4fv(
+        	glGetUniformLocation(prog.programId(), "uProjCameraWorld"),
+        	1, GL_TRUE, projCameraWorld.v
+    	);
 
-    // Bind the VAO and draw the cylinder
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-    glBindVertexArray(0);
+    	// Bind the VAO and draw the cylinder
+    	// Render the cylinder
+		glBindVertexArray(vao);
+    	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    	glBindVertexArray(0);
 
-    // Reset the polygon mode to fill back for other objects that are not wireframed
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// Render the cone
+        glBindVertexArray(coneVAO);
+        glDrawArrays(GL_TRIANGLES, 0, coneVertexCount);
+        glBindVertexArray(0);
 
-    // Unbind the shader program
-    glUseProgram(0);
 
-    // Debug checkpoint
-    OGL_CHECKPOINT_DEBUG();
+    	// Reset the polygon mode to fill back for other objects that are not wireframed
+    	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    // Swap the front and back buffers
-    glfwSwapBuffers(window);
+    	// Unbind the shader program
+    	glUseProgram(0);
+
+    	// Debug checkpoint
+    	OGL_CHECKPOINT_DEBUG();
+
+    	// Swap the front and back buffers
+    	glfwSwapBuffers(window);
 	}
 
 	// Cleanup.
