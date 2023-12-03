@@ -143,6 +143,8 @@ int main() try
 	OGL_CHECKPOINT_ALWAYS();
 
 	// TODO: global GL setup goes here
+	glEnable(GL_DEPTH_TEST); // Enable depth testing
+	glClearColor(0.2f, 0.2f, 0.2f, 0.0f);
 
 	OGL_CHECKPOINT_ALWAYS();
 
@@ -171,6 +173,9 @@ int main() try
 
 	// Create vertex buffers and VAO
 	//TODO: create VBOs and VAO
+	auto testCylinder = make_cylinder(false, 16, {1.f, 0.f, 0.f});
+	GLuint vao = create_vao(testCylinder);
+	std::size_t vertexCount = testCylinder.positions.size();
 
 	// Main loop
 	while( !glfwWindowShouldClose( window ) )
@@ -201,11 +206,13 @@ int main() try
 			glViewport( 0, 0, nwidth, nheight );
 		}
 
+		// Clear the color and depth buffers
+    	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the buffers
+
 		// Update state
 		auto const now = Clock::now();
 		float dt = std::chrono::duration_cast<Secondsf>(now-last).count();
 		last = now;
-
 
 		angle += dt * kPi_ * 0.3f;
 		if( angle >= 2.f*kPi_ )
@@ -223,15 +230,55 @@ int main() try
 		// Update: compute matrices
 		//TODO: define and compute projCameraWorld matrix
 
-		// Draw scene
-		OGL_CHECKPOINT_DEBUG();
+	Mat44f model2world = make_rotation_y(angle); // This assumes angle is declared and updated correctly
+    
+    Mat44f projection = make_perspective_projection(
+        60.f * kPi_ / 180.f, // Field of view in radians
+        fbwidth / fbheight,   // Aspect ratio
+        0.1f,                 // Near plane
+        100.0f                // Far plane
+    );
+    
+    // Update camera matrix
+    Mat44f Rx = make_rotation_x(state.camControl.theta);
+    Mat44f Ry = make_rotation_y(state.camControl.phi);
+    Mat44f T = make_translation({0.f, 0.f, -state.camControl.radius});
+    Mat44f world2camera = T * Rx * Ry;
+    
+    // Concatenate the transformations to create a single matrix
+    Mat44f projCameraWorld = projection * world2camera * model2world;
 
-		//TODO: draw frame
+    // Clear the color and depth buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		OGL_CHECKPOINT_DEBUG();
+    // Set wireframe mode to visualize the mesh structure
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-		// Display results
-		glfwSwapBuffers( window );
+    // Use the shader program
+    glUseProgram(prog.programId());
+    
+    // Pass the projCameraWorld matrix to the shader
+    glUniformMatrix4fv(
+        glGetUniformLocation(prog.programId(), "uProjCameraWorld"),
+        1, GL_TRUE, projCameraWorld.v
+    );
+
+    // Bind the VAO and draw the cylinder
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+    glBindVertexArray(0);
+
+    // Reset the polygon mode to fill back for other objects that are not wireframed
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    // Unbind the shader program
+    glUseProgram(0);
+
+    // Debug checkpoint
+    OGL_CHECKPOINT_DEBUG();
+
+    // Swap the front and back buffers
+    glfwSwapBuffers(window);
 	}
 
 	// Cleanup.
